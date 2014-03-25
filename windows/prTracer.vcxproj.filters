@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\raytracer.cpp" />
+    <ClCompile Include="..\src\whittedtracer.cpp" />
+    <ClCompile Include="..\src\aabb.cpp">
+      <Filter>intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\intersection.cpp">
+      <Filter>intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\listaccelerator.cpp">
+      <Filter>intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\color.cpp">
+      <Filter>shading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\diffuse.cpp">
+      <Filter>shading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lightprobe.cpp">
+      <Filter>shading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\texture.cpp">
+      <Filter>shading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mesh.cpp">
+      <Filter>primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\triangle.cpp">
+      <Filter>primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\primitive.cpp">
+      <Filter>primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sphere.cpp">
+      <Filter>primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pointlight.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\camera.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\node.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\image.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\matrix.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lodepng\lodepng.cpp">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pfm\pfm_input_file.cpp">
+      <Filter>pfm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pfm\pfm_output_file.cpp">
+      <Filter>pfm</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\defines.h" />
+    <ClInclude Include="..\src\raytracer.h" />
+    <ClInclude Include="..\src\whittedtracer.h" />
+    <ClInclude Include="..\src\aabb.h">
+      <Filter>intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\intersectable.h">
+      <Filter>intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\intersection.h">
+      <Filter>intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\listaccelerator.h">
+      <Filter>intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\rayaccelerator.h">
+      <Filter>intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\color.h">
+      <Filter>shading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\diffuse.h">
+      <Filter>shading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lightprobe.h">
+      <Filter>shading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\material.h">
+      <Filter>shading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\texture.h">
+      <Filter>shading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mesh.h">
+      <Filter>primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\triangle.h">
+      <Filter>primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\primitive.h">
+      <Filter>primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sphere.h">
+      <Filter>primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pointlight.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\camera.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\node.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\image.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\timer.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\matrix.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ray.h">
+      <Filter>intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lodepng\lodepng.h">
+      <Filter>png</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pfm\byte_order.hpp">
+      <Filter>pfm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pfm\color_pixel.hpp">
+      <Filter>pfm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pfm\config.hpp">
+      <Filter>pfm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pfm\pfm.hpp">
+      <Filter>pfm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pfm\pfm_input_file.hpp">
+      <Filter>pfm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pfm\pfm_output_file.hpp">
+      <Filter>pfm</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="intersection">
+      <UniqueIdentifier>{34ed7b28-b1d6-44cb-821f-82e33baa2727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shading">
+      <UniqueIdentifier>{2066a392-6ed3-466a-9b36-af009060dd81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="primitives">
+      <UniqueIdentifier>{af4e5ec3-f631-4242-ada2-c3ac4eee6b38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scene">
+      <UniqueIdentifier>{af1ff8cc-d92c-420f-a4d9-f99a560e69d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{03971901-dde4-4918-a175-c014ca2aad79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pfm">
+      <UniqueIdentifier>{1d3b0093-e025-4fe2-a427-d48e0603f790}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="png">
+      <UniqueIdentifier>{e13d5c11-cd86-443e-9c33-9f9c6cf28950}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
