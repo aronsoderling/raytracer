@@ -68,17 +68,25 @@ float Triangle::getArea() const
  */
 bool Triangle::intersect(const Ray& ray) const
 {
-	
-	Vector3D e1 = getVtxPosition(1) - getVtxPosition(0);
-	Vector3D e2 = getVtxPosition(2) - getVtxPosition(0);
-	Vector3D pNormal = e1.cross(e2);
-	float m =  -pNormal * getVtxPosition(0);
-	float t = (pNormal * ray.orig + m) / (pNormal * ray.dir);
+	Point3D v0 = getVtxPosition(0);
+	Point3D v1 = getVtxPosition(1);
+	Point3D v2 = getVtxPosition(2);
+	Vector3D e1 = v1 - v0;
+	Vector3D e2 = v2 - v0;
+	Vector3D pNormal = e1 % e2;
+	float m = (pNormal * -1.0f) * getVtxPosition(0);
+	float ndotp = pNormal * ray.orig;
+	float ndotd = pNormal * ray.dir;
+	float t = -((ndotp + m) / ndotd);
+	float tmin = ray.minT;
+	float tmax = ray.maxT;
 	if (t > ray.minT && t < ray.maxT){
-		Point3D Q = ray.orig + t * ray.dir;
+		Point3D Q = ray.orig + (ray.dir * t);
 		Vector3D r = Q - getVtxPosition(0);
-		float v = e1.cross(r).length() / pNormal.length();
-		float w = r.cross(e2).length() / pNormal.length();
+		float v = (e1 % r).length() / pNormal.length();
+		float w = (r % e2).length() / pNormal.length();
+
+
 		if (v >= 0 && w >= 0 && v + w < 1){
 			return true;
 		}
@@ -93,17 +101,25 @@ bool Triangle::intersect(const Ray& ray) const
  */
 bool Triangle::intersect(const Ray& ray, Intersection& isect) const
 {
-	
-	Vector3D e1 = getVtxPosition(1) - getVtxPosition(0);
-	Vector3D e2 = getVtxPosition(2) - getVtxPosition(0);
+	Point3D v0 = getVtxPosition(0);
+	Point3D v1 = getVtxPosition(1);
+	Point3D v2 = getVtxPosition(2);
+	Vector3D e1 = v1 - v0;
+	Vector3D e2 = v2 - v0;
 	Vector3D pNormal = e1 % e2;
-	float m = -(pNormal * getVtxPosition(0));
-	float t = ((pNormal * ray.orig) + m) / (pNormal * ray.dir);
-	if (true){//t > ray.minT && t < ray.maxT){
-		Point3D Q = ray.orig + (t * ray.dir);
+	float m = (pNormal * -1.0f) * getVtxPosition(0);
+	float ndotp = pNormal * ray.orig;
+	float ndotd = pNormal * ray.dir;
+	float t = - ((ndotp + m) / ndotd);
+	float tmin = ray.minT;
+	float tmax = ray.maxT;
+	if (t > ray.minT && t < ray.maxT){
+		Point3D Q = ray.orig + (ray.dir * t);
 		Vector3D r = Q - getVtxPosition(0);
 		float v = (e1 % r).length() / pNormal.length();
 		float w = (r % e2).length() / pNormal.length();
+		
+
 		if (v >= 0 && w >= 0 && v + w < 1){
 			//float t, u, v, w;
 			float u = 1 - v - w;

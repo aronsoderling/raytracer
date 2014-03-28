@@ -11,12 +11,14 @@
 class Phong : public Material
 {
 public:
-	Phong(const Color& c, float r = 0.0f, float t = 0.0f, float n = 1.0f);
+	Phong(const Color& c, int s, float r = 0.0f, float t = 0.0f, float n = 1.0f);
 	Color evalBRDF(const Intersection& is, const Vector3D& L);
 
 protected:
 	Color mDiffColor;	
-	float specular;
+	int specular;
+	float kd;
+	float ks;
 };
 
 #endif

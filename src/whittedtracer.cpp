@@ -78,8 +78,8 @@ Color WhittedTracer::tracePixel(int x, int y)
 	if (sampling){
 		for (int i = 0; i < iSamplesPerAxis; ++i){
 			for (int j = 0; j < iSamplesPerAxis; ++j){
-				float cx = (float)x + j / samplesPerAxis + uniform() / nbrSamples;
-				float cy = (float)y + i / samplesPerAxis + uniform() / nbrSamples;
+				float cx = (float)x + j / samplesPerAxis + uniform() / samplesPerAxis;
+				float cy = (float)y + i / samplesPerAxis + uniform() / samplesPerAxis;
 				Ray ray = mCamera->getRay(cx, cy);
 				pixelColor += trace(ray, 0);
 			}
@@ -105,8 +105,7 @@ Color WhittedTracer::trace(const Ray& ray, int depth)
 		Intersection is;
 		++nbrRays;
 		if (mScene->intersect(ray, is)){
-			return Color(1.0f, 1.0f, 1.0f);
-			/*int n = 0;
+			int n = 0;
 			n = mScene->getNumberOfLights();
 			Vector3D lightVec;
 			PointLight* l;
@@ -121,13 +120,16 @@ Color WhittedTracer::trace(const Ray& ray, int depth)
 					colorOut += radiance * is.mMaterial->evalBRDF(is, lightVec) * max(lightVec * is.mNormal, 0.0f);
 				}
 			}
+			colorOut *= max((1 - is.mMaterial->getReflectivity(is) - is.mMaterial->getTransparency(is)), 0.0f );
+
 			if(is.mMaterial->getReflectivity(is) > 0){
+				
 				colorOut += is.mMaterial->getReflectivity(is) * trace(is.getReflectedRay(), depth+1);
 			}
 			if(is.mMaterial->getTransparency(is) > 0){
 				colorOut += is.mMaterial->getTransparency(is) *trace(is.getRefractedRay(), depth+1);
 			}
-			*/
+			
 		}
 	}
 	return colorOut;

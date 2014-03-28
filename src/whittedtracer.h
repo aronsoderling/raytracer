@@ -23,8 +23,8 @@
 static const float nbrSamples = 9.0;
 static const float samplesPerAxis = sqrt(nbrSamples);
 static const int iSamplesPerAxis = (int)samplesPerAxis;
-static const bool sampling = false;
-static const int maxDepth = 2;
+static const bool sampling = true;
+static const int maxDepth = 4;
 class WhittedTracer : public Raytracer
 {
 public:

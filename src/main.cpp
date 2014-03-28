@@ -34,23 +34,23 @@ using namespace std;
 static void buildSpheres(Scene& scene)
 {
 	// Add lights
-	PointLight *pointLight1 = new PointLight(Point3D(20.0f, 240.0f, -7.0f), Color(1.5f, 1.5f, 1.5f));
+	PointLight *pointLight1 = new PointLight(Point3D(20.0f, 240.0f, -7.0f), Color(1.5f, 1.5f, 1.5f), 10.0f);
 	scene.add(pointLight1);
 
 	// Setup materials
-	Diffuse *material[4];
+	Phong *material[4];
 
-	material[0] = new Diffuse(Color(0.0f,0.2f,0.9f));
-	material[1] = new Diffuse(Color(1.0f, 0.3f, 0.2f));
-	material[2] = new Diffuse(Color(0.0f, 0.7f, 0.1f));
-	material[3] = new Diffuse(Color(0.6f, 0.6f, 0.6f));
+	material[0] = new Phong(Color(0.0f,0.2f,0.9f), 5);
+	material[1] = new Phong(Color(0.2f, 0.2f, 0.6f), 100);
+	material[2] = new Phong(Color(0.0f, 0.7f, 0.1f), 25);
+	material[3] = new Phong(Color(0.6f, 0.6f, 0.6f), 25);
 
-	material[0]->setReflectivity(0.0f);
-	material[1]->setReflectivity(0.7f);
+	material[0]->setReflectivity(0.1f);
+	material[1]->setReflectivity(0.9f);
 	material[2]->setReflectivity(0.3f);
 	material[3]->setReflectivity(0.5f);
 
-	material[0]->setTransparency(0.7f);
+	material[0]->setTransparency(0.6f);
 	material[1]->setTransparency(0.0f);
 	material[2]->setTransparency(0.3f);
 	material[3]->setTransparency(0.0f);
@@ -76,7 +76,7 @@ static void buildSpheres(Scene& scene)
 	//scene.add(sphere); // To be replaced by plane!
 
 	// Add plane
-	Diffuse *planeMaterial = new Diffuse(Color(1.0f,1.0f,1.0f));
+	Phong *planeMaterial = new Phong(Color(1.0f,1.0f,1.0f), 1000);
 	planeMaterial->setReflectivity(0.75f);
 	Mesh* plane = new Mesh("data/plane.obj", planeMaterial);
 
