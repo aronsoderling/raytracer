@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,12 +20,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -98,6 +100,7 @@
     <ClCompile Include="..\src\node.cpp" />
     <ClCompile Include="..\src\pfm\pfm_input_file.cpp" />
     <ClCompile Include="..\src\pfm\pfm_output_file.cpp" />
+    <ClCompile Include="..\src\phong.cpp" />
     <ClCompile Include="..\src\pointlight.cpp" />
     <ClCompile Include="..\src\primitive.cpp" />
     <ClCompile Include="..\src\raytracer.cpp" />
@@ -129,6 +132,7 @@
     <ClInclude Include="..\src\pfm\pfm.hpp" />
     <ClInclude Include="..\src\pfm\pfm_input_file.hpp" />
     <ClInclude Include="..\src\pfm\pfm_output_file.hpp" />
+    <ClInclude Include="..\src\phong.h" />
     <ClInclude Include="..\src\pointlight.h" />
     <ClInclude Include="..\src\primitive.h" />
     <ClInclude Include="..\src\ray.h" />

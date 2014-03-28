@@ -54,11 +54,15 @@ void WhittedTracer::computeImage()
 		}
 		
 		// Print progress approximately every 5%.
-		if ((y+1) % (height/20) == 0 || (y+1) == height)
-			std::cout << (100*(y+1)/height) << "% done" << std::endl;
+		if ((y + 1) % (height / 20) == 0 || (y + 1) == height){
+			std::cout << (100 * (y + 1) / height) << "% done" << std::endl;
+			std::cout << "Rays/second: " << nbrRays / timer.stop() << std::endl;
+			std::cout << "Rays: " << nbrRays << std::endl;
+			std::cout << "Time: " << timer.stop() << std::endl;
+		}
 	}
-	
-	std::cout << "Done in " << timer.stop() << " seconds" << std::endl;
+	std::cout << "Total number of rays: " << nbrRays << std::endl;
+	std::cout << "Done in: " << timer.stop() << " seconds" << std::endl;
 }
 
 /**
@@ -70,16 +74,25 @@ Color WhittedTracer::tracePixel(int x, int y)
 {
 	Color pixelColor = Color(0.0f, 0.0f, 0.0f);
 
-	
-	for(int i = 0; i <3; ++i){
-		for(int j = 0; j <3; ++j){
-			float cx = (float)x + j / 3.0f + uniform()/9.0f; 
-			float cy = (float)y + i / 3.0f + uniform()/9.0f;
-			Ray ray = mCamera->getRay(cx,cy);
-			pixelColor += trace(ray, 0); 
+	//super sampling, samples / pixel
+	if (sampling){
+		for (int i = 0; i < iSamplesPerAxis; ++i){
+			for (int j = 0; j < iSamplesPerAxis; ++j){
+				float cx = (float)x + j / samplesPerAxis + uniform() / nbrSamples;
+				float cy = (float)y + i / samplesPerAxis + uniform() / nbrSamples;
+				Ray ray = mCamera->getRay(cx, cy);
+				pixelColor += trace(ray, 0);
+			}
 		}
+		pixelColor /= nbrSamples;
 	}
-	return pixelColor / 9.0f;
+	else{
+		float cx = (float)x + 0.5f;
+		float cy = (float)y + 0.5f;
+		Ray ray = mCamera->getRay(cx, cy);
+		pixelColor = trace(ray, 0);
+	}
+	return pixelColor;
 }
 
 /**
@@ -88,10 +101,12 @@ Color WhittedTracer::tracePixel(int x, int y)
 Color WhittedTracer::trace(const Ray& ray, int depth)
 {
 	Color colorOut = Color(0,0,0);
-	if(depth < 3){
+	if(depth < maxDepth){
 		Intersection is;
+		++nbrRays;
 		if (mScene->intersect(ray, is)){
-			int n = 0;
+			return Color(1.0f, 1.0f, 1.0f);
+			/*int n = 0;
 			n = mScene->getNumberOfLights();
 			Vector3D lightVec;
 			PointLight* l;
@@ -112,6 +127,7 @@ Color WhittedTracer::trace(const Ray& ray, int depth)
 			if(is.mMaterial->getTransparency(is) > 0){
 				colorOut += is.mMaterial->getTransparency(is) *trace(is.getRefractedRay(), depth+1);
 			}
+			*/
 		}
 	}
 	return colorOut;

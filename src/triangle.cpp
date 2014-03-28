@@ -69,9 +69,20 @@ float Triangle::getArea() const
 bool Triangle::intersect(const Ray& ray) const
 {
 	
-	// TODO: Add boolean triangle intersection test.
-
-
+	Vector3D e1 = getVtxPosition(1) - getVtxPosition(0);
+	Vector3D e2 = getVtxPosition(2) - getVtxPosition(0);
+	Vector3D pNormal = e1.cross(e2);
+	float m =  -pNormal * getVtxPosition(0);
+	float t = (pNormal * ray.orig + m) / (pNormal * ray.dir);
+	if (t > ray.minT && t < ray.maxT){
+		Point3D Q = ray.orig + t * ray.dir;
+		Vector3D r = Q - getVtxPosition(0);
+		float v = e1.cross(r).length() / pNormal.length();
+		float w = r.cross(e2).length() / pNormal.length();
+		if (v >= 0 && w >= 0 && v + w < 1){
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -82,46 +93,39 @@ bool Triangle::intersect(const Ray& ray) const
  */
 bool Triangle::intersect(const Ray& ray, Intersection& isect) const
 {
-
-	// TODO: Add triangle intersection test.
-	// Remove the "return false"-statement and 
-	// uncomment the lines that follows.
-
-	return false;
-
-	/*
-
-	// YOUR TEST HERE
-
-
-	float t, u, v, w;
-
-
-
-
-
-	// If test passes...
-
-	// Compute information about the hit point
-	isect.mRay = ray;
-	isect.mObject = this;						// Store ptr to the object hit by the ray (this).
-	isect.mMaterial = getMaterial();
-	if (!isect.mMaterial)
-		isect.mMaterial = mMesh->getMaterial();		// Store ptr to the material at the hit point.
-	isect.mPosition = ray.orig + t*ray.dir;		// Compute position of intersection
-	isect.mNormal = u*getVtxNormal(0) + v*getVtxNormal(1) + w*getVtxNormal(2);
-	isect.mNormal.normalize();
-	isect.mView = -ray.dir;						// View direction is negative ray direction.
-	isect.mFrontFacing = isect.mView.dot(isect.mNormal) > 0.0f;
-	if (!isect.mFrontFacing) isect.mNormal = -isect.mNormal;
-	isect.mTexture = u*getVtxTexture(0) + v*getVtxTexture(1) + w*getVtxTexture(2);
-	isect.mHitTime = t;
-	isect.mHitParam = UV(u,v);
 	
-	return true;
+	Vector3D e1 = getVtxPosition(1) - getVtxPosition(0);
+	Vector3D e2 = getVtxPosition(2) - getVtxPosition(0);
+	Vector3D pNormal = e1 % e2;
+	float m = -(pNormal * getVtxPosition(0));
+	float t = ((pNormal * ray.orig) + m) / (pNormal * ray.dir);
+	if (true){//t > ray.minT && t < ray.maxT){
+		Point3D Q = ray.orig + (t * ray.dir);
+		Vector3D r = Q - getVtxPosition(0);
+		float v = (e1 % r).length() / pNormal.length();
+		float w = (r % e2).length() / pNormal.length();
+		if (v >= 0 && w >= 0 && v + w < 1){
+			//float t, u, v, w;
+			float u = 1 - v - w;
+			isect.mRay = ray;
+			isect.mObject = this;						// Store ptr to the object hit by the ray (this).
+			isect.mMaterial = getMaterial();
+			if (!isect.mMaterial)
+				isect.mMaterial = mMesh->getMaterial();		// Store ptr to the material at the hit point.
+			isect.mPosition = ray.orig + t*ray.dir;		// Compute position of intersection
+			isect.mNormal = u*getVtxNormal(0) + v*getVtxNormal(1) + w*getVtxNormal(2);
+			isect.mNormal.normalize();
+			isect.mView = -ray.dir;						// View direction is negative ray direction.
+			isect.mFrontFacing = isect.mView.dot(isect.mNormal) > 0.0f;
+			if (!isect.mFrontFacing) isect.mNormal = -isect.mNormal;
+			isect.mTexture = u*getVtxTexture(0) + v*getVtxTexture(1) + w*getVtxTexture(2);
+			isect.mHitTime = t;
+			isect.mHitParam = UV(u, v);
 
-	*/
-
+			return true;
+		}
+	}
+	return false;
 }
 
 

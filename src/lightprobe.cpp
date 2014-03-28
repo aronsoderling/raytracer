@@ -9,6 +9,7 @@
 
 #include "defines.h"
 #include "lightprobe.h"
+#include <algorithm>
 
 /**
  * Default constructor. Creates an uninitialized light probe.

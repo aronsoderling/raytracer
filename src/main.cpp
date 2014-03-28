@@ -20,6 +20,7 @@
 #include "lightprobe.h"
 #include "listaccelerator.h"
 #include "texture.h"
+#include "phong.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -40,9 +41,9 @@ static void buildSpheres(Scene& scene)
 	Diffuse *material[4];
 
 	material[0] = new Diffuse(Color(0.0f,0.2f,0.9f));
-	material[1] = new Diffuse(Color(1.0f,0.3f,0.2f));
-	material[2] = new Diffuse(Color(0.0f,0.7f,0.1f));
-	material[3] = new Diffuse(Color(0.6f,0.6f,0.6f));
+	material[1] = new Diffuse(Color(1.0f, 0.3f, 0.2f));
+	material[2] = new Diffuse(Color(0.0f, 0.7f, 0.1f));
+	material[3] = new Diffuse(Color(0.6f, 0.6f, 0.6f));
 
 	material[0]->setReflectivity(0.0f);
 	material[1]->setReflectivity(0.7f);
@@ -70,9 +71,9 @@ static void buildSpheres(Scene& scene)
 	}
 
 	// NOTE: Remove this sphere from the scene when it's time to draw the plane!
-	Sphere* sphere = new Sphere(200, material[3]);
-	sphere->setTranslation(Vector3D(0, -210, 0));
-	scene.add(sphere); // To be replaced by plane!
+	//Sphere* sphere = new Sphere(200, material[3]);
+	//sphere->setTranslation(Vector3D(0, -210, 0));
+	//scene.add(sphere); // To be replaced by plane!
 
 	// Add plane
 	Diffuse *planeMaterial = new Diffuse(Color(1.0f,1.0f,1.0f));

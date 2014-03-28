@@ -64,6 +64,9 @@
     <ClCompile Include="..\src\pfm\pfm_output_file.cpp">
       <Filter>pfm</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\phong.cpp">
+      <Filter>shading</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\defines.h" />
@@ -155,6 +158,9 @@
     </ClInclude>
     <ClInclude Include="..\src\pfm\pfm_output_file.hpp">
       <Filter>pfm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\phong.h">
+      <Filter>shading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

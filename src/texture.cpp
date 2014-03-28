@@ -12,7 +12,7 @@
 #include <assert.h>
 
 #ifdef WIN32
-static float log2f(float x)
+static float loga2f(float x)
 {
 	return log10f(x)/log10f(2.0f);
 }
@@ -96,7 +96,7 @@ Color Texture::get(float x, float y, const UV& ddx, const UV& ddy) const
 	Vector2D sddy(ddx.v*height, ddy.v*height);
 
 	const float mipBias = 0.0f;
-	float mip = mipBias + 0.5f*log2f(max(sddx.dot(sddx), sddy.dot(sddy)));
+	float mip = mipBias + 0.5f*loga2f(max(sddx.dot(sddx), sddy.dot(sddy)));
 	
 	return get(x, y, mip);
 }
@@ -107,7 +107,7 @@ Color Texture::getAnisotropic(float x, float y, const UV& ddx, const UV& ddy) co
 	Vector2D sddy(ddx.v*height, ddy.v*height);
 	
 	const float mipBias = 0.0f;
-	float mip = mipBias + 0.5f*log2f(min(sddx.dot(sddx), sddy.dot(sddy)));
+	float mip = mipBias + 0.5f*loga2f(min(sddx.dot(sddx), sddy.dot(sddy)));
 
 	Vector2D major(ddx.u, ddx.v);
 	Vector2D minor(ddy.u, ddy.v);

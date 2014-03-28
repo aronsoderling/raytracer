@@ -20,6 +20,11 @@
  * contributions from direct illumination, reflection and refraction
  * should be evaluated and summed up.
  */
+static const float nbrSamples = 9.0;
+static const float samplesPerAxis = sqrt(nbrSamples);
+static const int iSamplesPerAxis = (int)samplesPerAxis;
+static const bool sampling = false;
+static const int maxDepth = 2;
 class WhittedTracer : public Raytracer
 {
 public:
@@ -31,6 +36,8 @@ public:
 protected:
 	Color tracePixel(int x, int y);
 	Color trace(const Ray& ray, int depth);
+private:
+	int nbrRays = 0;
 };
 
 #endif

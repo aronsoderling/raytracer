@@ -10,6 +10,7 @@
 #include "defines.h"
 #include "ray.h"
 #include "aabb.h"
+#include <algorithm>
 	
 /**
  * Default constructor, initializing the box to the degenerate case
