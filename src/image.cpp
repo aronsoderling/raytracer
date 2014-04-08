@@ -130,7 +130,7 @@ void Image::load(const std::string& filename)
 	
 #ifdef SUPPORT_PFM
 	if (isFormat(filename, ".pfm")) {
-		ifstream istream(filename.c_str());
+		ifstream istream(filename.c_str(), ios::binary);
 		pfm_input_file pfm_input_file(istream);
 		
 		format_type format;

@@ -33,11 +33,11 @@ Ray::Differential Intersection::calculatePositionDifferential() const
 Ray Intersection::getReflectedRay() const
 {
 	const Vector3D& D = mRay.dir;
-	//my code
 	Vector3D N = mNormal;
-	Vector3D V = mView;
+	
+	Vector3D V = -D;
 	Vector3D R = 2 * (N * V) * N - V;
-	//end my code
+	
 	Ray::Differential dp = calculatePositionDifferential();
 	Ray::Differential dd;
 	Vector3D dn;
@@ -67,16 +67,12 @@ Ray Intersection::getRefractedRay() const
 	float eta = iEta / tEta;
 
 	//my code
-	Vector3D i = -mView;
-	float r = -i * N;
-	float c = 1 - eta*eta*(1-r*r);
-	Vector3D T;
-	if(c>=0){
-		T = eta * i + (eta*r - sqrt(c)) * N; 
-	}else{
-		Vector3D V = mView;
-		T = 2 * (N * V) * N - V;
-	}
+	//Vector3D i = -mView;
+	float r = -D * N;
+	float c = 1 - pow(eta, 2)*  (1-pow(r, 2));
+	if(c < 0)
+		return getReflectedRay(); 
+	Vector3D T = eta * D + (eta * r - sqrt(c)) * N;
 	//end my code
 	
 	float mu = eta*N.dot(D) - N.dot(T);

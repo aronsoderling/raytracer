@@ -24,6 +24,11 @@ class Color;
  * algorithms (Whitted, Pathtracing), the tracePixel() function should be
  * overridden in a sub class.
  */
+static const float nbrSamples = 9.0;
+static const float samplesPerAxis = 3.0;
+static const int iSamplesPerAxis = 3;
+static const bool sampling = false;
+static const int maxDepth = 3;
 class Raytracer
 {
 public:

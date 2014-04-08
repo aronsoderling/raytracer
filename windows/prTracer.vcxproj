@@ -86,8 +86,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\aabb.cpp" />
+    <ClCompile Include="..\src\bvhaccelerator.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\color.cpp" />
+    <ClCompile Include="..\src\cornellscene.cpp" />
     <ClCompile Include="..\src\diffuse.cpp" />
     <ClCompile Include="..\src\image.cpp" />
     <ClCompile Include="..\src\intersection.cpp" />
@@ -98,6 +100,7 @@
     <ClCompile Include="..\src\matrix.cpp" />
     <ClCompile Include="..\src\mesh.cpp" />
     <ClCompile Include="..\src\node.cpp" />
+    <ClCompile Include="..\src\pathtracer.cpp" />
     <ClCompile Include="..\src\pfm\pfm_input_file.cpp" />
     <ClCompile Include="..\src\pfm\pfm_output_file.cpp" />
     <ClCompile Include="..\src\phong.cpp" />
@@ -112,8 +115,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\aabb.h" />
+    <ClInclude Include="..\src\bvhaccelerator.h" />
+    <ClInclude Include="..\src\bvhnode.h" />
     <ClInclude Include="..\src\camera.h" />
     <ClInclude Include="..\src\color.h" />
+    <ClInclude Include="..\src\cornellscene.h" />
     <ClInclude Include="..\src\defines.h" />
     <ClInclude Include="..\src\diffuse.h" />
     <ClInclude Include="..\src\image.h" />
@@ -126,6 +132,7 @@
     <ClInclude Include="..\src\matrix.h" />
     <ClInclude Include="..\src\mesh.h" />
     <ClInclude Include="..\src\node.h" />
+    <ClInclude Include="..\src\pathtracer.h" />
     <ClInclude Include="..\src\pfm\byte_order.hpp" />
     <ClInclude Include="..\src\pfm\color_pixel.hpp" />
     <ClInclude Include="..\src\pfm\config.hpp" />

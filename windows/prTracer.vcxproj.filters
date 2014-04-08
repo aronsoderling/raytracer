@@ -67,6 +67,11 @@
     <ClCompile Include="..\src\phong.cpp">
       <Filter>shading</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\bvhaccelerator.cpp">
+      <Filter>intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cornellscene.cpp" />
+    <ClCompile Include="..\src\pathtracer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\defines.h" />
@@ -162,6 +167,14 @@
     <ClInclude Include="..\src\phong.h">
       <Filter>shading</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\bvhaccelerator.h">
+      <Filter>intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\bvhnode.h">
+      <Filter>intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cornellscene.h" />
+    <ClInclude Include="..\src\pathtracer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="intersection">

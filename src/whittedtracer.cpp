@@ -56,12 +56,12 @@ void WhittedTracer::computeImage()
 		// Print progress approximately every 5%.
 		if ((y + 1) % (height / 20) == 0 || (y + 1) == height){
 			std::cout << (100 * (y + 1) / height) << "% done" << std::endl;
-			std::cout << "Rays/second: " << nbrRays / timer.stop() << std::endl;
-			std::cout << "Rays: " << nbrRays << std::endl;
-			std::cout << "Time: " << timer.stop() << std::endl;
+			//std::cout << "Rays/second: " << nbrRays / timer.stop() << std::endl;
+			//std::cout << "Rays: " << nbrRays << std::endl;
+			//std::cout << "Time: " << timer.stop() << std::endl;
 		}
 	}
-	std::cout << "Total number of rays: " << nbrRays << std::endl;
+	//std::cout << "Total number of rays: " << nbrRays << std::endl;
 	std::cout << "Done in: " << timer.stop() << " seconds" << std::endl;
 }
 
@@ -101,38 +101,30 @@ Color WhittedTracer::tracePixel(int x, int y)
 Color WhittedTracer::trace(const Ray& ray, int depth)
 {
 	Color colorOut = Color(0,0,0);
-	if(depth < maxDepth){
-		Intersection is;
-		++nbrRays;
-		if (mScene->intersect(ray, is)){
-			int n = 0;
-			n = mScene->getNumberOfLights();
-			Vector3D lightVec;
-			PointLight* l;
-			for(int i = 0; i != n; ++i){
-				Color radiance = Color(0,0,0);
-				l = mScene->getLight(i);
-				if(!mScene->intersect(is.getShadowRay(l))){
-					lightVec = l->getWorldPosition();
-					lightVec -= is.mPosition;
-					lightVec.normalize();
-					radiance = l->getRadiance();
-					colorOut += radiance * is.mMaterial->evalBRDF(is, lightVec) * max(lightVec * is.mNormal, 0.0f);
-				}
-			}
-			colorOut *= max((1 - is.mMaterial->getReflectivity(is) - is.mMaterial->getTransparency(is)), 0.0f );
-
-			if(is.mMaterial->getReflectivity(is) > 0){
-				
-				colorOut += is.mMaterial->getReflectivity(is) * trace(is.getReflectedRay(), depth+1);
-			}
-			if(is.mMaterial->getTransparency(is) > 0){
-				colorOut += is.mMaterial->getTransparency(is) *trace(is.getRefractedRay(), depth+1);
-			}
-			
+	Intersection is;
+	++nbrRays;
+	if (mScene->intersect(ray, is)){
+		Color reflectedC, refractedC, emittedC;
+		Material* m = is.mMaterial;
+		float reflectivity = m->getReflectivity(is);
+		float transparency = m->getTransparency(is);
+		if (depth < maxDepth){
+			reflectedC += trace(is.getReflectedRay(), depth + 1);
+			refractedC += trace(is.getRefractedRay(), depth + 1);
 		}
+		for (int i = 0; i < mScene->getNumberOfLights(); ++i){
+			PointLight* l = mScene->getLight(i);
+			if(!mScene->intersect(is.getShadowRay(l))){
+				Vector3D lightVec = l->getWorldPosition() - is.mPosition;
+				lightVec.normalize();
+				Color radiance = l->getRadiance();
+				emittedC += (radiance * is.mMaterial->evalBRDF(is, lightVec) * max(lightVec * is.mNormal, 0.0f));
+			}
+		}
+		colorOut = emittedC * (1 - transparency - reflectivity) + refractedC * transparency + reflectedC * reflectivity;
+		//colorOut *= (1 - is.mMaterial->getReflectivity(is) - is.mMaterial->getTransparency(is));			
 	}
-	return colorOut;
+return colorOut;
 	
 }
 

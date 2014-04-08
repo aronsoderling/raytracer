@@ -16,11 +16,14 @@
 #include "sphere.h"
 #include "diffuse.h"
 #include "whittedtracer.h"
+#include "pathtracer.h"
 #include "pointlight.h"
 #include "lightprobe.h"
 #include "listaccelerator.h"
 #include "texture.h"
 #include "phong.h"
+#include "bvhaccelerator.h"
+#include "cornellscene.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -40,24 +43,24 @@ static void buildSpheres(Scene& scene)
 	// Setup materials
 	Phong *material[4];
 
-	material[0] = new Phong(Color(0.0f,0.2f,0.9f), 5);
+	material[0] = new Phong(Color(0.0f,0.2f,0.4f), 0);
 	material[1] = new Phong(Color(0.2f, 0.2f, 0.6f), 100);
 	material[2] = new Phong(Color(0.0f, 0.7f, 0.1f), 25);
 	material[3] = new Phong(Color(0.6f, 0.6f, 0.6f), 25);
-
+	
 	material[0]->setReflectivity(0.1f);
 	material[1]->setReflectivity(0.9f);
-	material[2]->setReflectivity(0.3f);
+	material[2]->setReflectivity(0.2f);
 	material[3]->setReflectivity(0.5f);
 
-	material[0]->setTransparency(0.6f);
+	material[0]->setTransparency(0.7f);
 	material[1]->setTransparency(0.0f);
-	material[2]->setTransparency(0.3f);
+	material[2]->setTransparency(0.4f);
 	material[3]->setTransparency(0.0f);
 
 	material[0]->setIndexOfRefraction(1.01f);
 	material[1]->setIndexOfRefraction(1.00f);
-	material[2]->setIndexOfRefraction(1.20f);
+	material[2]->setIndexOfRefraction(1.02f);
 	material[3]->setIndexOfRefraction(1.00f);
 
 	// Add spheres
@@ -76,7 +79,7 @@ static void buildSpheres(Scene& scene)
 	//scene.add(sphere); // To be replaced by plane!
 
 	// Add plane
-	Phong *planeMaterial = new Phong(Color(1.0f,1.0f,1.0f), 1000);
+	Phong *planeMaterial = new Phong(Color(1.0f,1.0f,1.0f), 25);
 	planeMaterial->setReflectivity(0.75f);
 	Mesh* plane = new Mesh("data/plane.obj", planeMaterial);
 
@@ -86,16 +89,70 @@ static void buildSpheres(Scene& scene)
 
 	// TODO: Uncomment the following lines for the cliff-hanger assignment
 
-	/*
 	Diffuse *triSphereMaterial = new Diffuse(Color(1.0f,0.0f,1.0f));
 	Mesh* triSphere = new Mesh("data/sphere.obj", triSphereMaterial);
 	triSphere->setScale(5.0f);
 	triSphere->setTranslation(Vector3D(0, 0, 0));
 	scene.add(triSphere);
-	*/
+	
 
 }
 
+static void buildSimple(Scene& scene, bool scrambled)
+{
+	PointLight *pointLight0 = new PointLight(Point3D(-20.0f, 20.0f, 60.0f), Color(1.5f, 1.5f, 1.5f));
+	scene.add(pointLight0);
+	// Setup material
+	Diffuse *material = new Diffuse(Color(0.0f, 0.2f, 1.5f));
+	material->setReflectivity(0.4f);
+	// Add spheres
+	for (int i = 0; i < 80; i++) {
+		float x, y, z;
+		if (scrambled) {
+			x = -39.5f + (float)((i * 13) % 80);
+			y = -39.5f + (float)((i * 7) % 80);
+			z = -39.5f + (float)((i * 29) % 80);
+		}
+		else {
+			x = -39.5f + (float)(i % 80);
+			y = -39.5f + (float)(i % 80);
+			z = -39.5f + (float)(i % 80);
+		}
+		Sphere* sphere = new Sphere(1.0, material);
+		sphere->setTranslation(Vector3D(x, y, z));
+		scene.add(sphere);
+	}
+}
+
+static void buildElephant(Scene& scene)
+{
+	PointLight *pointLight0 = new PointLight(Point3D(-50.0f, 60.0f, 20.0f), Color(0.4f, 0.7f, 0.7f), 2.7f);
+	scene.add(pointLight0);
+	PointLight *pointLight1 = new PointLight(Point3D(70.0f, 140.0f, -7.0f), Color(2.5f, 2.5f, 2.5f), 2.7f);
+	scene.add(pointLight1);
+	Phong *planeMaterial = new Phong(Color(1.0f, 1.0f, 1.0f), 15);
+	planeMaterial->setReflectivity(0.75f);
+	Mesh* plane = new Mesh("data/plane.obj", planeMaterial);
+	plane->setScale(20.0f);
+	plane->setTranslation(Vector3D(0, -10, 0));
+	scene.add(plane);
+	Phong *elephantMaterial0 = new Phong(Color(0.4f, 0.7f, 1.0f), 25);
+	elephantMaterial0->setReflectivity(0.55f);
+	Mesh* elephant0 = new Mesh("data/elephant.obj", elephantMaterial0);
+	elephant0->setScale(1.1f);
+	elephant0->setRotation(0.0f, 220.0f, 0.0f);
+	elephant0->setTranslation(Vector3D(-12, -10, 1));
+	scene.add(elephant0);
+	Phong *elephantMaterial1 = new Phong(Color(0.4f, 1.0f, 0.7f), 25);
+	elephantMaterial1->setReflectivity(0.20f);
+	elephantMaterial1->setTransparency(0.50f);
+	elephantMaterial1->setIndexOfRefraction(1.1f);
+	Mesh* elephant1 = new Mesh("data/elephant.obj", elephantMaterial1);
+	elephant1->setScale(1.35f);
+	elephant1->setRotation(0.0f, 190.0f, 0.0f);
+	elephant1->setTranslation(Vector3D(8.0f, -10, -5));
+	scene.add(elephant1);
+}
 
 /**
  * Changes the current working directory.
@@ -133,26 +190,47 @@ static void changeToRootDirectory()
 int main(int argc, char* const argv[])
 {
 	try {
+
 		// Set working directory.
 		changeToRootDirectory();
 
 		// Build scene.
-		ListAccelerator accelerator;
+		BVHAccelerator accelerator;
 
 		Scene scene(&accelerator);
-		buildSpheres(scene);
-		
+		buildCornellScene(&scene);
+		//buildSimple(scene, true);
+		//buildElephant(scene);
+		//
+		//buildSpheres(scene);
 		// Create output image.
 		Image output(512, 512);
 
-		// Create camera.
+		// Create camera. sphere cam
+		/*
 		Camera* camera = new Camera(&output);
-
 		Point3D pos(27.0f, 17.0f, 21.0f);
 		Point3D target(-1.0f, -3.0f, 0.0f);
 		Vector3D up(0.0f, 1.0f, 0.0f);
-		
 		camera->setLookAt(pos, target, up, 52.0f);
+		*/
+
+		//simple camera
+		
+		/*Camera* camera = new Camera(&output);
+		Point3D pos(0.0f, 0.0f, 116.0f);
+		Point3D target(0.0f, 0.0f, 0.0f);
+		Vector3D up(0.0f, 1.0f, 0.0f);
+		camera->setLookAt(pos, target, up, 58.0f);
+		*/
+		//elephant camera parameters
+		Camera* camera = new Camera(&output);
+		/*Point3D pos(27.0f, 13.0f, 21.0f);
+		Point3D target(0.0f, -4.0f, 0.0f);
+		Vector3D up(0.0f, 1.0f, 0.0f);
+		camera->setLookAt(pos, target, up, 52.0f);
+		*/
+		setupCornellCamera(camera);
 		scene.add(camera);
 
 		// Prepare the scene for rendering.
@@ -161,7 +239,7 @@ int main(int argc, char* const argv[])
 		// Create a raytracer and start raytracing.
 		std::cout << "creating raytracer" << std::endl;
 
-		WhittedTracer rt(&scene, &output);
+		PathTracer rt(&scene, &output);
 		rt.computeImage();
 
 		// Save image.
