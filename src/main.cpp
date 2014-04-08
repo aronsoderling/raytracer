@@ -199,7 +199,7 @@ int main(int argc, char* const argv[])
 
 		Scene scene(&accelerator);
 		buildCornellScene(&scene);
-		//buildSimple(scene, true);
+		//buildSimple(scene, false);
 		//buildElephant(scene);
 		//
 		//buildSpheres(scene);
@@ -216,8 +216,8 @@ int main(int argc, char* const argv[])
 		*/
 
 		//simple camera
-		
-		/*Camera* camera = new Camera(&output);
+		/*
+		Camera* camera = new Camera(&output);
 		Point3D pos(0.0f, 0.0f, 116.0f);
 		Point3D target(0.0f, 0.0f, 0.0f);
 		Vector3D up(0.0f, 1.0f, 0.0f);

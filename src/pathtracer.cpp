@@ -116,12 +116,27 @@ Color PathTracer::trace(const Ray& ray, int depth)
 			PointLight* l = mScene->getLight(i);
 			if(!mScene->intersect(is.getShadowRay(l))){
 				Vector3D lightVec = l->getWorldPosition() - is.mPosition;
+				float d2 = lightVec.length2();
 				lightVec.normalize();
 				Color radiance = l->getRadiance();
 				Color brdf = is.mMaterial->evalBRDF(is, lightVec);
 				float angle = max(lightVec * is.mNormal, 0.0f);
-				emittedC += radiance * brdf * angle;
+				emittedC += radiance * brdf * angle / d2;
 			}
+		}
+		float x, y, z;
+		Vector3D v(1.f,1.f,1.f);
+		while (v.length2 > 1){
+			 v = Vector3D(uniform() * 2 - 1, uniform() * 2 - 1, uniform() * 2 - 1);
+		}
+
+		v.normalize();
+		if (sin(v * is.mNormal) > 0.f )
+			v = v - 2 * (v * is.mNormal) * is.mNormal;
+
+		if (depth < maxDepth){
+			Ray rayCopy(is.mPosition, v, 0.001f);
+			trace(rayCopy, depth + 1);
 		}
 		colorOut = emittedC * (1 - transparency - reflectivity) + refractedC * transparency + reflectedC * reflectivity;
 		//colorOut *= (1 - is.mMaterial->getReflectivity(is) - is.mMaterial->getTransparency(is));			

@@ -29,8 +29,8 @@ public:
 void BVHAccelerator::build(const vector<Intersectable*>& objects)
 {
 	AABB worldBox;
-	AABB temp;
 	for (Intersectable* o : objects){
+		AABB temp;
 		o->getAABB(temp);
 		worldBox.include(temp);
 		objs.push_back(o);
@@ -42,7 +42,7 @@ void BVHAccelerator::build(const vector<Intersectable*>& objects)
 	//print();
 }
 void BVHAccelerator::build_recursive(int left_index, int right_index, BVHNode* node, int depth){
-	if ((right_index - left_index) <= 3){// || (other termination criteria)){
+	if ((right_index - left_index) <= 3 || depth == 20){// || (other termination criteria)){
 		node->makeLeaf(left_index, right_index - left_index );
 		return;
 	}
