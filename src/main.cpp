@@ -37,49 +37,49 @@ using namespace std;
 static void buildSpheres(Scene& scene)
 {
 	// Add lights
-	PointLight *pointLight1 = new PointLight(Point3D(20.0f, 240.0f, -7.0f), Color(1.5f, 1.5f, 1.5f), 10.0f);
+	PointLight *pointLight1 = new PointLight(Point3D(20.0f, 240.0f, -7.0f), Color(1.5f, 1.5f, 1.5f));
 	scene.add(pointLight1);
 
 	// Setup materials
 	Phong *material[4];
 
-	material[0] = new Phong(Color(0.0f,0.2f,0.4f), 0);
-	material[1] = new Phong(Color(0.2f, 0.2f, 0.6f), 100);
-	material[2] = new Phong(Color(0.0f, 0.7f, 0.1f), 25);
-	material[3] = new Phong(Color(0.6f, 0.6f, 0.6f), 25);
-	
-	material[0]->setReflectivity(0.1f);
-	material[1]->setReflectivity(0.9f);
-	material[2]->setReflectivity(0.2f);
+	material[0] = new Phong(Color(0.0f, 0.2f, 0.9f), 10);
+	material[1] = new Phong(Color(1.0f, 0.3f, 0.2f), 100);
+	material[2] = new Phong(Color(0.0f, 0.7f, 0.1f), 10);
+	material[3] = new Phong(Color(0.6f, 0.6f, 0.6f), 35);
+
+	material[0]->setReflectivity(0.0f);
+	material[1]->setReflectivity(0.7f);
+	material[2]->setReflectivity(0.0f);
 	material[3]->setReflectivity(0.5f);
 
 	material[0]->setTransparency(0.7f);
 	material[1]->setTransparency(0.0f);
-	material[2]->setTransparency(0.4f);
+	material[2]->setTransparency(0.3f);
 	material[3]->setTransparency(0.0f);
 
 	material[0]->setIndexOfRefraction(1.01f);
 	material[1]->setIndexOfRefraction(1.00f);
-	material[2]->setIndexOfRefraction(1.02f);
+	material[2]->setIndexOfRefraction(1.20f);
 	material[3]->setIndexOfRefraction(1.00f);
 
 	// Add spheres
 	for (int i = 0; i < 2 * 2 * 2; i++) {
-		float x = (float) (-6 + 12 * (i & 1));
-		float y = (float) (-6 + 12 * ((i >> 1) & 1));
-		float z = (float) (-6 + 12 * ((i >> 2) & 1));
+		float x = (float)(-6 + 12 * (i & 1));
+		float y = (float)(-6 + 12 * ((i >> 1) & 1));
+		float z = (float)(-6 + 12 * ((i >> 2) & 1));
 		Sphere* sphere = new Sphere(3.5, material[i % 3]);
 		sphere->setTranslation(Vector3D(x, y, z));
 		scene.add(sphere);
 	}
 
 	// NOTE: Remove this sphere from the scene when it's time to draw the plane!
-	//Sphere* sphere = new Sphere(200, material[3]);
-	//sphere->setTranslation(Vector3D(0, -210, 0));
-	//scene.add(sphere); // To be replaced by plane!
-
+	/*Sphere* sphere = new Sphere(200, material[3]);
+	sphere->setTranslation(Vector3D(0, -210, 0));
+	scene.add(sphere); // To be replaced by plane!
+	*/
 	// Add plane
-	Phong *planeMaterial = new Phong(Color(1.0f,1.0f,1.0f), 25);
+	Phong *planeMaterial = new Phong(Color(1.0f, 1.0f, 1.0f), 10);
 	planeMaterial->setReflectivity(0.75f);
 	Mesh* plane = new Mesh("data/plane.obj", planeMaterial);
 
@@ -89,12 +89,14 @@ static void buildSpheres(Scene& scene)
 
 	// TODO: Uncomment the following lines for the cliff-hanger assignment
 
-	Diffuse *triSphereMaterial = new Diffuse(Color(1.0f,0.0f,1.0f));
+	/*
+	Phong *triSphereMaterial = new Phong(Color(1.0f,0.0f,1.0f));
 	Mesh* triSphere = new Mesh("data/sphere.obj", triSphereMaterial);
 	triSphere->setScale(5.0f);
 	triSphere->setTranslation(Vector3D(0, 0, 0));
 	scene.add(triSphere);
-	
+	*/
+
 
 }
 
@@ -126,9 +128,9 @@ static void buildSimple(Scene& scene, bool scrambled)
 
 static void buildElephant(Scene& scene)
 {
-	PointLight *pointLight0 = new PointLight(Point3D(-50.0f, 60.0f, 20.0f), Color(0.4f, 0.7f, 0.7f), 2.7f);
+	PointLight *pointLight0 = new PointLight(Point3D(-50.0f, 60.0f, 20.0f), Color(0.4f, 0.7f, 0.7f));
 	scene.add(pointLight0);
-	PointLight *pointLight1 = new PointLight(Point3D(70.0f, 140.0f, -7.0f), Color(2.5f, 2.5f, 2.5f), 2.7f);
+	PointLight *pointLight1 = new PointLight(Point3D(70.0f, 140.0f, -7.0f), Color(2.5f, 2.5f, 2.5f));
 	scene.add(pointLight1);
 	Phong *planeMaterial = new Phong(Color(1.0f, 1.0f, 1.0f), 15);
 	planeMaterial->setReflectivity(0.75f);
@@ -196,41 +198,36 @@ int main(int argc, char* const argv[])
 
 		// Build scene.
 		BVHAccelerator accelerator;
-
 		Scene scene(&accelerator);
-		buildCornellScene(&scene);
-		//buildSimple(scene, false);
-		//buildElephant(scene);
-		//
-		//buildSpheres(scene);
-		// Create output image.
 		Image output(512, 512);
-
-		// Create camera. sphere cam
-		/*
 		Camera* camera = new Camera(&output);
+
+		buildCornellScene(&scene);
+		setupCornellCamera(camera);
+
+		/*
+		buildSimple(scene, false);
+		Point3D pos(0.0f, 0.0f, 116.0f);
+		Point3D target(0.0f, 0.0f, 0.0f);
+		Vector3D up(0.0f, 1.0f, 0.0f);
+		camera->setLookAt(pos, target, up, 58.0f);
+		*/
+		
+		/*
+		buildElephant(scene);
+		Point3D pos(27.0f, 13.0f, 21.0f);
+		Point3D target(0.0f, -4.0f, 0.0f);
+		Vector3D up(0.0f, 1.0f, 0.0f);
+		camera->setLookAt(pos, target, up, 52.0f);
+		*/
+		/*
+		buildSpheres(scene);
 		Point3D pos(27.0f, 17.0f, 21.0f);
 		Point3D target(-1.0f, -3.0f, 0.0f);
 		Vector3D up(0.0f, 1.0f, 0.0f);
 		camera->setLookAt(pos, target, up, 52.0f);
 		*/
 
-		//simple camera
-		/*
-		Camera* camera = new Camera(&output);
-		Point3D pos(0.0f, 0.0f, 116.0f);
-		Point3D target(0.0f, 0.0f, 0.0f);
-		Vector3D up(0.0f, 1.0f, 0.0f);
-		camera->setLookAt(pos, target, up, 58.0f);
-		*/
-		//elephant camera parameters
-		Camera* camera = new Camera(&output);
-		/*Point3D pos(27.0f, 13.0f, 21.0f);
-		Point3D target(0.0f, -4.0f, 0.0f);
-		Vector3D up(0.0f, 1.0f, 0.0f);
-		camera->setLookAt(pos, target, up, 52.0f);
-		*/
-		setupCornellCamera(camera);
 		scene.add(camera);
 
 		// Prepare the scene for rendering.

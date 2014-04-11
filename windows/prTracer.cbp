@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="prTracer" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug Win32">
+				<Option output="prTracer" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-D_SCL_SECURE_NO_WARNINGS" />
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add option="-D_CRT_SECURE_NO_WARNINGS" />
+					<Add directory="$(IncludePath)" />
+				</Compiler>
+				<Linker>
+					<Add directory="$(LibraryPath)" />
+				</Linker>
+			</Target>
+			<Target title="Release Win32">
+				<Option output="prTracer" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-D_SCL_SECURE_NO_WARNINGS" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add option="-D_CRT_SECURE_NO_WARNINGS" />
+					<Add directory="$(IncludePath)" />
+				</Compiler>
+				<Linker>
+					<Add directory="$(LibraryPath)" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="../src/aabb.cpp" />
+		<Unit filename="../src/aabb.h" />
+		<Unit filename="../src/bvhaccelerator.cpp" />
+		<Unit filename="../src/bvhaccelerator.h" />
+		<Unit filename="../src/bvhnode.h" />
+		<Unit filename="../src/camera.cpp" />
+		<Unit filename="../src/camera.h" />
+		<Unit filename="../src/color.cpp" />
+		<Unit filename="../src/color.h" />
+		<Unit filename="../src/cornellscene.cpp" />
+		<Unit filename="../src/cornellscene.h" />
+		<Unit filename="../src/defines.h" />
+		<Unit filename="../src/diffuse.cpp" />
+		<Unit filename="../src/diffuse.h" />
+		<Unit filename="../src/image.cpp" />
+		<Unit filename="../src/image.h" />
+		<Unit filename="../src/intersectable.h" />
+		<Unit filename="../src/intersection.cpp" />
+		<Unit filename="../src/intersection.h" />
+		<Unit filename="../src/lightprobe.cpp" />
+		<Unit filename="../src/lightprobe.h" />
+		<Unit filename="../src/listaccelerator.cpp" />
+		<Unit filename="../src/listaccelerator.h" />
+		<Unit filename="../src/lodepng/lodepng.cpp" />
+		<Unit filename="../src/lodepng/lodepng.h" />
+		<Unit filename="../src/main.cpp" />
+		<Unit filename="../src/material.h" />
+		<Unit filename="../src/matrix.cpp" />
+		<Unit filename="../src/matrix.h" />
+		<Unit filename="../src/mesh.cpp" />
+		<Unit filename="../src/mesh.h" />
+		<Unit filename="../src/node.cpp" />
+		<Unit filename="../src/node.h" />
+		<Unit filename="../src/pathtracer.cpp" />
+		<Unit filename="../src/pathtracer.h" />
+		<Unit filename="../src/pfm/byte_order.hpp" />
+		<Unit filename="../src/pfm/color_pixel.hpp" />
+		<Unit filename="../src/pfm/config.hpp" />
+		<Unit filename="../src/pfm/pfm.hpp" />
+		<Unit filename="../src/pfm/pfm_input_file.cpp" />
+		<Unit filename="../src/pfm/pfm_input_file.hpp" />
+		<Unit filename="../src/pfm/pfm_output_file.cpp" />
+		<Unit filename="../src/pfm/pfm_output_file.hpp" />
+		<Unit filename="../src/phong.cpp" />
+		<Unit filename="../src/phong.h" />
+		<Unit filename="../src/pointlight.cpp" />
+		<Unit filename="../src/pointlight.h" />
+		<Unit filename="../src/primitive.cpp" />
+		<Unit filename="../src/primitive.h" />
+		<Unit filename="../src/ray.h" />
+		<Unit filename="../src/rayaccelerator.h" />
+		<Unit filename="../src/raytracer.cpp" />
+		<Unit filename="../src/raytracer.h" />
+		<Unit filename="../src/scene.cpp" />
+		<Unit filename="../src/scene.h" />
+		<Unit filename="../src/sphere.cpp" />
+		<Unit filename="../src/sphere.h" />
+		<Unit filename="../src/texture.cpp" />
+		<Unit filename="../src/texture.h" />
+		<Unit filename="../src/timer.h" />
+		<Unit filename="../src/triangle.cpp" />
+		<Unit filename="../src/triangle.h" />
+		<Unit filename="../src/whittedtracer.cpp" />
+		<Unit filename="../src/whittedtracer.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

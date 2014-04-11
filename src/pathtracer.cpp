@@ -17,6 +17,12 @@
 #include "timer.h"
 #include "image.h"
 
+const float nbrSamples = 30.0;
+const float samplesPerAxis = 10.0;
+const int iSamplesPerAxis = 10;
+const bool sampling = true;
+const int maxDepth = 3;
+
 /**
  * Creates a Path raytracer. The parameters are passed on to the base class constructor.
  */
@@ -56,9 +62,6 @@ void PathTracer::computeImage()
 		// Print progress approximately every 5%.
 		if ((y + 1) % (height / 20) == 0 || (y + 1) == height){
 			std::cout << (100 * (y + 1) / height) << "% done" << std::endl;
-			//std::cout << "Rays/second: " << nbrRays / timer.stop() << std::endl;
-			//std::cout << "Rays: " << nbrRays << std::endl;
-			//std::cout << "Time: " << timer.stop() << std::endl;
 		}
 	}
 	//std::cout << "Total number of rays: " << nbrRays << std::endl;
@@ -86,6 +89,7 @@ Color PathTracer::tracePixel(int x, int y)
 		}
 		pixelColor /= nbrSamples;
 	}
+	
 	else{
 		float cx = (float)x + 0.5f;
 		float cy = (float)y + 0.5f;
@@ -104,14 +108,31 @@ Color PathTracer::trace(const Ray& ray, int depth)
 	Intersection is;
 	++nbrRays;
 	if (mScene->intersect(ray, is)){
-		Color reflectedC, refractedC, emittedC;
+		Color reflectedC, refractedC, lDirect, lIndirect;
 		Material* m = is.mMaterial;
+
+		Vector3D v(10.f, 0.f, 0.f);
+		while (v.length2() > 1){
+			v = Vector3D(uniform() * 2 - 1, uniform() * 2 - 1, uniform() * 2 - 1);
+		}
+
+		v.normalize();
+		float dot = v * is.mNormal;
+		//if (0 < dot && dot < M_PI)
+			v = v - 2 * (v * is.mNormal) * is.mNormal;
+
+		if (depth < maxDepth){
+			Ray ray2(is.mPosition, v, 0.001f);
+			lIndirect = trace(ray2, depth + 1);
+		}
+		/*
 		float reflectivity = m->getReflectivity(is);
 		float transparency = m->getTransparency(is);
 		if (depth < maxDepth){
-			reflectedC += trace(is.getReflectedRay(), depth + 1);
-			refractedC += trace(is.getRefractedRay(), depth + 1);
+			reflectedC = trace(is.getReflectedRay(), depth + 1);
+			refractedC = trace(is.getRefractedRay(), depth + 1);
 		}
+		*/
 		for (int i = 0; i < mScene->getNumberOfLights(); ++i){
 			PointLight* l = mScene->getLight(i);
 			if(!mScene->intersect(is.getShadowRay(l))){
@@ -121,24 +142,10 @@ Color PathTracer::trace(const Ray& ray, int depth)
 				Color radiance = l->getRadiance();
 				Color brdf = is.mMaterial->evalBRDF(is, lightVec);
 				float angle = max(lightVec * is.mNormal, 0.0f);
-				emittedC += radiance * brdf * angle / d2;
+				lDirect += radiance * brdf * angle / d2;
 			}
 		}
-		float x, y, z;
-		Vector3D v(1.f,1.f,1.f);
-		while (v.length2 > 1){
-			 v = Vector3D(uniform() * 2 - 1, uniform() * 2 - 1, uniform() * 2 - 1);
-		}
-
-		v.normalize();
-		if (sin(v * is.mNormal) > 0.f )
-			v = v - 2 * (v * is.mNormal) * is.mNormal;
-
-		if (depth < maxDepth){
-			Ray rayCopy(is.mPosition, v, 0.001f);
-			trace(rayCopy, depth + 1);
-		}
-		colorOut = emittedC * (1 - transparency - reflectivity) + refractedC * transparency + reflectedC * reflectivity;
+		colorOut = lDirect + lIndirect;// +refractedC * transparency + reflectedC * reflectivity;
 		//colorOut *= (1 - is.mMaterial->getReflectivity(is) - is.mMaterial->getTransparency(is));			
 	}
 return colorOut;

@@ -17,6 +17,12 @@
 #include "timer.h"
 #include "image.h"
 
+const float nbrSamples = 9.0;
+const float samplesPerAxis = 3.0;
+const int iSamplesPerAxis = 3;
+const bool sampling = true;
+const int maxDepth = 3;
+
 /**
  * Creates a Whitted raytracer. The parameters are passed on to the base class constructor.
  */
@@ -109,8 +115,8 @@ Color WhittedTracer::trace(const Ray& ray, int depth)
 		float reflectivity = m->getReflectivity(is);
 		float transparency = m->getTransparency(is);
 		if (depth < maxDepth){
-			reflectedC += trace(is.getReflectedRay(), depth + 1);
-			refractedC += trace(is.getRefractedRay(), depth + 1);
+			reflectedC = trace(is.getReflectedRay(), depth + 1);
+			refractedC = trace(is.getRefractedRay(), depth + 1);
 		}
 		for (int i = 0; i < mScene->getNumberOfLights(); ++i){
 			PointLight* l = mScene->getLight(i);
@@ -118,10 +124,13 @@ Color WhittedTracer::trace(const Ray& ray, int depth)
 				Vector3D lightVec = l->getWorldPosition() - is.mPosition;
 				lightVec.normalize();
 				Color radiance = l->getRadiance();
-				emittedC += (radiance * is.mMaterial->evalBRDF(is, lightVec) * max(lightVec * is.mNormal, 0.0f));
+				Color brdf = is.mMaterial->evalBRDF(is, lightVec);
+				float angle = max(lightVec * is.mNormal, 0.0f);
+				emittedC += radiance * brdf * angle;
 			}
 		}
-		colorOut = emittedC * (1 - transparency - reflectivity) + refractedC * transparency + reflectedC * reflectivity;
+		colorOut = emittedC +refractedC * transparency + reflectedC * reflectivity;
+		//colorOut = emittedC *(1 - transparency - reflectivity) + refractedC * transparency + reflectedC * reflectivity;
 		//colorOut *= (1 - is.mMaterial->getReflectivity(is) - is.mMaterial->getTransparency(is));			
 	}
 return colorOut;

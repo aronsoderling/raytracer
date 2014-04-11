@@ -68,7 +68,7 @@ float Triangle::getArea() const
 */
 bool Triangle::intersect(const Ray& ray) const
 {
-	float eps = 0.001f;
+	float eps = 0.00001f;
 	Point3D P = ray.orig;
 	Vector3D D = ray.dir;
 	Vector3D v0 = getVtxPosition(0);
@@ -109,7 +109,7 @@ bool Triangle::intersect(const Ray& ray) const
 */
 bool Triangle::intersect(const Ray& ray, Intersection& isect) const
 {
-	float eps = 0.001f;
+	float eps = 0.00001f;
 	Point3D P = ray.orig;
 	Vector3D D = ray.dir;
 	Vector3D v0 = getVtxPosition(0);
