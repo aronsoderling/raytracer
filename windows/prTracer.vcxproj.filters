@@ -199,4 +199,8 @@
       <UniqueIdentifier>{e13d5c11-cd86-443e-9c33-9f9c6cf28950}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.gitignore" />
+    <None Include=".gitignore" />
+  </ItemGroup>
 </Project>

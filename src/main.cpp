@@ -24,6 +24,7 @@
 #include "phong.h"
 #include "bvhaccelerator.h"
 #include "cornellscene.h"
+#include <omp.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -199,7 +200,7 @@ int main(int argc, char* const argv[])
 		// Build scene.
 		BVHAccelerator accelerator;
 		Scene scene(&accelerator);
-		Image output(512, 512);
+		Image output(256, 256);
 		Camera* camera = new Camera(&output);
 
 		buildCornellScene(&scene);
@@ -248,3 +249,4 @@ int main(int argc, char* const argv[])
 		exit(1);
 	}
 }
+

@@ -32,8 +32,6 @@ public:
 protected:
 	Color tracePixel(int x, int y);
 	Color trace(const Ray& ray, int depth);
-private:
-	int nbrRays = 0;
 };
 
 #endif

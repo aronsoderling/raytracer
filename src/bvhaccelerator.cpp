@@ -96,29 +96,12 @@ void BVHAccelerator::build_recursive(int left_index, int right_index, BVHNode* n
 	for (int i = left_index; i < split_index; ++i){
 		objs[i]->getAABB(aabb);
 		left.include(aabb);
-
-		/*
-		if (aabb.mMin.x < left.mMin.x){ left.mMin.x = aabb.mMin.x; }
-		if (aabb.mMin.y < left.mMin.y){ left.mMin.y = aabb.mMin.y; }
-		if (aabb.mMin.z < left.mMin.z){ left.mMin.z = aabb.mMin.z; }
-		if (aabb.mMax.x > left.mMax.x){ left.mMax.x = aabb.mMax.x; }
-		if (aabb.mMax.y > left.mMax.y){ left.mMax.y = aabb.mMax.y; }
-		if (aabb.mMax.z > left.mMax.z){ left.mMax.z = aabb.mMax.z; }
-		*/
 	}
 
 	AABB right;
 	for (int i = split_index; i < right_index; ++i){
 		objs[i]->getAABB(aabb);
 		right.include(aabb);
-		/*
-		if (aabb.mMin.x < right.mMin.x){ right.mMin.x = aabb.mMin.x; }
-		if (aabb.mMin.y < right.mMin.y){ right.mMin.y = aabb.mMin.y; }
-		if (aabb.mMin.z < right.mMin.z){ right.mMin.z = aabb.mMin.z; }
-		if (aabb.mMax.x > right.mMax.x){ right.mMax.x = aabb.mMax.x; }
-		if (aabb.mMax.y > right.mMax.y){ right.mMax.y = aabb.mMax.y; }
-		if (aabb.mMax.z > right.mMax.z){ right.mMax.z = aabb.mMax.z; }
-		*/
 	}
 
 	//Create two new nodes, leftNode and rightNode and assign bounding boxes 

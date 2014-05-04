@@ -152,6 +152,12 @@
     <ClInclude Include="..\src\triangle.h" />
     <ClInclude Include="..\src\whittedtracer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.gitignore">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include=".gitignore" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
