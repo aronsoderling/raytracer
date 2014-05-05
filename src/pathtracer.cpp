@@ -22,7 +22,7 @@ const float nbrSamples = 100.0;
 const float samplesPerAxis = 10.0;
 const int iSamplesPerAxis = 10;
 const bool sampling = true;
-const int maxDepth = 2;
+const int maxDepth = 4;
 const float maxDepthf = 2;
 
 /**
@@ -117,13 +117,6 @@ Color PathTracer::trace(const Ray& ray, int depth)
 	Intersection is;
 	if (mScene->intersect(ray, is)){
 		Color reflectedC, refractedC, lDirect, lIndirect;
-		Material* m = is.mMaterial;
-		
-		//calculate a random direction on the hemisphere
-		Vector3D v;
-		v = Vector3D(uniform()*2.0f - 1.0f, uniform()*2.0f - 1.0f, uniform()*2.0f - 1.0f);
-		v.normalize();
-		v = (v*is.mNormal) * v;
 		
 		/*
 		float theta = acos(sqrt(1 - uniform()));
@@ -147,8 +140,49 @@ Color PathTracer::trace(const Ray& ray, int depth)
 
 		//trace recursively in random direction
 		if (depth < maxDepth){
+			/*float theta, phi;
+			Vector3D n_x, n_y, n_z;
+			float x_b, y_b, z_b;
+			Vector3D dir_b, dir;
+
+			theta = acos(sqrt(1 - uniform()));
+			phi = 2 * M_PI * uniform();
+
+			Vector3D up(1.0f, 0.0f, 0.0f);
+			if (fabsf(is.mNormal.x) > 0.75f) {
+				up = Vector3D(0.0f, 1.0f, 0.0f);
+			}
+
+			n_x = up % is.mNormal;
+			n_x.normalize();
+			n_y = n_x % is.mNormal;
+			n_z = is.mNormal;
+
+			x_b = cos(phi) * sin(theta);
+			y_b = sin(phi) * sin(theta);
+			z_b = cos(theta);
+			dir = x_b * n_x + y_b * n_y + z_b * n_z;
+
+			Ray pathRay;
+			pathRay.orig = is.mPosition;
+			pathRay.dir = dir;
+			Color brdf = is.mMaterial->evalBRDF(is, dir);
+			lIndirect = M_PI * trace(pathRay, depth + 1) * brdf;*/
+			
+			//calculate a random direction on the hemisphere
+
+			float theta;
+			float phi;
+
+			Vector3D v;
+			v = Vector3D(uniform()*2.0f - 1.0f, uniform()*2.0f - 1.0f, uniform()*2.0f - 1.0f);
+			v.normalize();
+			v = (v*is.mNormal) * v;
+
+			float k_inv = 1 / (4 * M_PI);
+
 			Ray ray2(is.mPosition, v, 0.001f);
-			lIndirect += trace(ray2, depth + 1);
+			lIndirect += trace(ray2, depth + 1) * k_inv;
 		}
 		
 		/*
