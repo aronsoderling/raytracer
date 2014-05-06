@@ -11,12 +11,15 @@
 #include "diffuse.h"
 #include "sphere.h"
 #include "mesh.h"
+#include "phong.h"
 
 void buildCornellScene(Scene* scene)
 {
 	Diffuse* red = new Diffuse(Color(0.7f, 0.1f, 0.1f));
 	Diffuse* blue = new Diffuse(Color(0.1f, 0.1f, 0.7f));
 	Diffuse* white = new Diffuse(Color(0.7f, 0.7f, 0.7f));
+	Diffuse* reflect = new Diffuse(Color(0.7f, 0.7f, 0.7f), 0.5f, 0.0f, 1.0f);
+	Diffuse* refract = new Diffuse(Color(0.7f, 0.7f, 0.7f), 0.0f, 0.5f, 1.5f);
 
 	Mesh* ground = new Mesh("data/plane.obj", white);
 	ground->setScale(150.0f);
@@ -41,10 +44,10 @@ void buildCornellScene(Scene* scene)
 	roof->setRotation(180.0f, 0.0f, 0.0f);
 	roof->setTranslation(0.0f, 120, 0.0f);
 
-	Sphere* ball1 = new Sphere(16.5f, white);
+	Sphere* ball1 = new Sphere(16.5f, reflect);
 	ball1->setTranslation(Vector3D(23.5f, 16.5f, 31.0f));
-	
-	Sphere* ball2 = new Sphere(16.5f, white);
+		
+	Sphere* ball2 = new Sphere(16.5f, refract);
 	ball2->setTranslation(Vector3D(-22.5f, 16.5f, 0.0f));
 	
 	PointLight* light = new PointLight(Point3D(0.0f, 108.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), 6000.0f);
