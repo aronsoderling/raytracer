@@ -13,6 +13,7 @@ public:
 
 	/// Returns the BRDF at the intersection is for the light direction L.
 	virtual Color evalBRDF(const Intersection& is, const Vector3D& L){ return color; };
+	virtual bool isEmissive() { return true; }
 
 protected:
 	Color color;			///< Optional name of EmissiveMaterial.

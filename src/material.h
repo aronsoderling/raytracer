@@ -49,6 +49,8 @@ public:
 	/// Sets the index of refraction. Empty space is 1, denser materials higher.
 	virtual void setIndexOfRefraction(float n) { mRefractionIndex=n; }
 
+	virtual bool isEmissive() { return false; }
+
 	/// Sets the name of the material.
 	void setName(const std::string &name) { mName = name; }
 

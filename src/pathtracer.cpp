@@ -18,9 +18,9 @@
 #include "image.h"
 #include <omp.h>
 
-const float nbrSamples = 1024.0;
-const float samplesPerAxis = 32.0;
-const int iSamplesPerAxis = 32;
+const float nbrSamples = 100.0;
+const float samplesPerAxis = 10.0;
+const int iSamplesPerAxis = 10;
 const bool sampling = true;
 const int maxDepth = 4;
 const float p_abs = 0.1f;
@@ -166,7 +166,12 @@ Color PathTracer::trace(const Ray& ray, int depth)
 				Ray ray2;
 				ray2.orig = is.mPosition;
 				ray2.dir = dir;
-				lIndirect = M_PI * trace(ray2, depth + 1)* is.mMaterial->evalBRDF(is, dir);
+				if (is.mMaterial->isEmissive()){
+					lDirect = is.mMaterial->evalBRDF(is, dir);
+				}
+				else{
+					lIndirect = M_PI * trace(ray2, depth + 1)* is.mMaterial->evalBRDF(is, dir);
+				}
 				if (depth > maxDepth)
 					lIndirect *= abs_factor;
 			}

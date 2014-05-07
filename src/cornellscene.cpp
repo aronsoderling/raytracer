@@ -12,6 +12,7 @@
 #include "sphere.h"
 #include "mesh.h"
 #include "phong.h"
+#include "emissivematerial.h"
 
 void buildCornellScene(Scene* scene)
 {
@@ -58,8 +59,10 @@ void buildCornellScene(Scene* scene)
 	ball2->setTranslation(Vector3D(-22.5f, 16.5f, 0.0f));
 	scene->add(ball2);
 	
-	
-	PointLight* light = new PointLight(Point3D(0.0f, 108.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), 6000.0f);
+	EmissiveMaterial* emissive = new EmissiveMaterial(Color(4000.0f, 4000.0f, 4000.0f));
+	Sphere* light = new Sphere(1.0f, emissive);
+	light->setTranslation(0.0f, 108.0f, 0.0f);
+	//PointLight* light = new PointLight(Point3D(0.0f, 108.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), 6000.0f);
 	scene->add(light);
 	
 }

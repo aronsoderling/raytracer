@@ -123,6 +123,7 @@
     <ClInclude Include="..\src\cornellscene.h" />
     <ClInclude Include="..\src\defines.h" />
     <ClInclude Include="..\src\diffuse.h" />
+    <ClInclude Include="..\src\emissivematerial.h" />
     <ClInclude Include="..\src\image.h" />
     <ClInclude Include="..\src\intersectable.h" />
     <ClInclude Include="..\src\intersection.h" />

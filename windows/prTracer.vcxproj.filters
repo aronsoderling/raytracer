@@ -175,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="..\src\cornellscene.h" />
     <ClInclude Include="..\src\pathtracer.h" />
+    <ClInclude Include="..\src\emissivematerial.h">
+      <Filter>shading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="intersection">
