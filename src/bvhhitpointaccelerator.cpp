@@ -135,7 +135,7 @@ void BVHHitpointAccelerator::build_recursive(int left_index, int right_index, BV
 	build_recursive(split_index, right_index, rightNode, depth + 1);
 }
 
-bool BVHHitpointAccelerator::intersect(const Point3D& point, Hitpoint& hp)
+bool BVHHitpointAccelerator::intersect(const Point3D& point, Color addFlux)
 {
 	float tmin, tmax;
 	stack<BVHNode*> nodeStack;
@@ -144,7 +144,6 @@ bool BVHHitpointAccelerator::intersect(const Point3D& point, Hitpoint& hp)
 	while (!nodeStack.empty()){
 		BVHNode* node = nodeStack.top();
 		nodeStack.pop();
-
 		AABB bb = node->getAABB();
 
 		if (intersectAABB(point, bb)){
@@ -154,7 +153,8 @@ bool BVHHitpointAccelerator::intersect(const Point3D& point, Hitpoint& hp)
 					Hitpoint* obj = objs[i];
 					Vector3D dist(point - obj->is.mPosition);
 					if ( dist.length2() <= obj->radius * obj->radius ){
-						hp = *obj;
+						obj->newPhotonCount += 1;
+						obj->totalFlux += addFlux;
 						return true;
 					}
 				}

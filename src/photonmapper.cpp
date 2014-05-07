@@ -27,7 +27,7 @@ const bool sampling = true;
 const int maxDepth = 4;
 const float p_abs = 0.1f;
 const float abs_factor = 1.0f / (1.0f - p_abs);
-const float startRadius = 0.5f;
+const float startRadius = 0.9f;
 const int numberPhotons = 100000;
 
 /**
@@ -101,8 +101,8 @@ void PhotonMapper::forwardPass(){
 //			{
 				lines++;
 
-				if (lines % (height / 20) == 0 || lines == height)
-					std::cout << (100 * lines / height) << "%" << std::endl;
+				//if (lines % (height / 20) == 0 || lines == height)
+				//	std::cout << (100 * lines / height) << "%" << std::endl;
 //			}
 		}
 
@@ -152,14 +152,11 @@ void PhotonMapper::photonTracingPass(){
 		PointLight* l = mScene->getLight(i);
 		for (int i = 0; i < numberPhotons; ++i){
 			
-			float x = 2, y = 2, z = 2;
-			while (x*x + y*y + z*z > 1){
-				x = uniform();
-				y = uniform();
-				z = uniform();
+			Vector3D dir(uniform() * 2 - 1, uniform() * 2 - 1, uniform() * 2 - 1);
+			while(dir.length2() > 1.0f){
+				dir = Vector3D(uniform() * 2 - 1, uniform() * 2 - 1, uniform() * 2 - 1);
 			}
-			
-			Vector3D dir(x, y, z);
+			dir.normalize();
 
 			Ray ray;
 			ray.orig = l->getWorldPosition();
@@ -204,23 +201,14 @@ void PhotonMapper::trace(const Ray& ray, int depth, const Color& flux)
 			Ray ray2;
 			ray2.orig = is.mPosition;
 			ray2.dir = dir;
-
-			Hitpoint hp;
-			Color addFlux;
-			if (hitpointBVH.intersect(is.mPosition, hp)){
-				//float angle = max(is.mNormal * dir, 0.0f);
-
-				hp.photonCount += 1;
-				addFlux = flux * is.mMaterial->evalBRDF(is, dir);// * M_PI * angle;
-
+			Color addFlux = flux;
+			if (depth != 1){
+				Hitpoint hp;
+				addFlux = flux * is.mMaterial->evalBRDF(is, -dir);
 				if (depth > maxDepth)
 					addFlux *= abs_factor;
-
-				hp.totalFlux += addFlux;
-
-				//TODO: FIX THIS SHIET
+				hitpointBVH.intersect(is.mPosition, addFlux);
 			}
-
 			trace(ray2, depth + 1, addFlux);
 		}
 	}
@@ -228,7 +216,9 @@ void PhotonMapper::trace(const Ray& ray, int depth, const Color& flux)
 
 void PhotonMapper::output(int i){
 	for (Hitpoint* hp : hitpointBVH.objs){
-		Color out = hp->directIllumination; //hp->totalFlux / (numberPhotons * i * M_PI * hp->radius * hp->radius) + 
+		Color flux = hp->totalFlux;
+		float rad = hp->radius;
+		Color out = hp->directIllumination + hp->totalFlux / (numberPhotons * (i+1) * M_PI * hp->radius * hp->radius);
 		mImage->setPixel(hp->pixelX, hp->pixelY, out);
 	}
 
