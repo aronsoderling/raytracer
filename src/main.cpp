@@ -200,7 +200,7 @@ int main(int argc, char* const argv[])
 		// Build scene.
 		BVHAccelerator accelerator;
 		Scene scene(&accelerator);
-		Image output(256, 256);
+		Image output(512, 512);
 		Camera* camera = new Camera(&output);
 
 		buildCornellScene(&scene);

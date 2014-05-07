@@ -16,6 +16,7 @@
 #include "pathtracer.h"
 #include "timer.h"
 #include "image.h"
+#include "lightprobe.h"
 #include <omp.h>
 
 const float nbrSamples = 100.0;
@@ -25,12 +26,14 @@ const bool sampling = true;
 const int maxDepth = 4;
 const float p_abs = 0.1f;
 const float abs_factor = 1.0f / (1.0f - p_abs);
+LightProbe lp;
 
 /**
  * Creates a Path raytracer. The parameters are passed on to the base class constructor.
  */
 PathTracer::PathTracer(Scene* scene, Image* img) : Raytracer(scene,img)
 {
+	lp.load("data/grace_probe.pfm");
 }
 
 
@@ -114,7 +117,7 @@ Color PathTracer::tracePixel(int x, int y)
  */
 Color PathTracer::trace(const Ray& ray, int depth)
 {
-	Color colorOut = Color(0.0f,0.0f,0.0f);
+	Color colorOut = Color(1.0f,1.0f,1.0f);
 	Intersection is;
 	if (mScene->intersect(ray, is)){
 		Color reflectedC, refractedC, lDirect, lIndirect;
@@ -177,6 +180,9 @@ Color PathTracer::trace(const Ray& ray, int depth)
 			}
 			colorOut = lDirect + lIndirect;
 		}			
+	}
+	else{
+		colorOut = lp.getRadiance(ray.dir);
 	}
 return colorOut;	
 }

@@ -205,5 +205,8 @@
   <ItemGroup>
     <None Include="..\.gitignore" />
     <None Include=".gitignore" />
+    <None Include="..\data\grace_probe.pfm">
+      <Filter>pfm</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -158,6 +158,7 @@
     <None Include="..\.gitignore">
       <SubType>Designer</SubType>
     </None>
+    <None Include="..\data\grace_probe.pfm" />
     <None Include=".gitignore" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
