@@ -17,6 +17,7 @@
 #include "diffuse.h"
 #include "whittedtracer.h"
 #include "pathtracer.h"
+#include "photonmapper.h"
 #include "pointlight.h"
 #include "lightprobe.h"
 #include "listaccelerator.h"
@@ -200,7 +201,7 @@ int main(int argc, char* const argv[])
 		// Build scene.
 		BVHAccelerator accelerator;
 		Scene scene(&accelerator);
-		Image output(512, 512);
+		Image output(32, 32);
 		Camera* camera = new Camera(&output);
 
 		buildCornellScene(&scene);
@@ -237,11 +238,12 @@ int main(int argc, char* const argv[])
 		// Create a raytracer and start raytracing.
 		std::cout << "creating raytracer" << std::endl;
 
-		PathTracer rt(&scene, &output);
+		//PathTracer rt(&scene, &output);
+		PhotonMapper rt(&scene, &output);
 		rt.computeImage();
 
 		// Save image.
-		output.save("output.png");
+		//output.save("output.png");
 	}
 	catch (const std::exception& e) {
 		// Print the error and exit.

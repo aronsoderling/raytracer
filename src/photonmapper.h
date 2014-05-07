@@ -11,7 +11,7 @@
 #define PHOTONMAPPER_H
 
 #include "raytracer.h"
-#include "bvhaccelerator.h"
+#include "bvhhitpointaccelerator.h"
 
 /**
  * Class implementing a simple Whitted-style raytracer. 
@@ -22,17 +22,6 @@
  * should be evaluated and summed up.
  */
 
-struct Hitpoint {
-	Intersection is;
-	int pixelX, pixelY;
-	float pixelWeight;
-	float radius;
-	Color directIllumination;
-	float photonCount = 0;
-	int newPhotonCount = 0;
-	Color totalFlux = Color(0.0f,0.0f,0.0f);
-};
-
 class PhotonMapper : public Raytracer
 {
 public:
@@ -40,13 +29,14 @@ public:
 	~PhotonMapper();
 
 	virtual void computeImage();
-	
 protected:
-	Color tracePixel(int x, int y);
-	Color trace(const Ray& ray, int depth);
-	void firstPass(int x, int y);
-	
-	BVHAccelerator hitpointBVH;
+	void forwardPass();
+	void forwardPassPixel(int x, int y);
+	void photonTracingPass();
+	void trace(const Ray& ray, int depth, const Color& flux);
+	void output(int i);
+	std::vector<Hitpoint*> vec;
+	BVHHitpointAccelerator hitpointBVH;
 };
 
 #endif

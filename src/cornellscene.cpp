@@ -26,7 +26,7 @@ void buildCornellScene(Scene* scene)
 	ground->setScale(150.0f);
 	scene->add(ground);
 	
-	/*Mesh* side1 = new Mesh("data/plane.obj", red);
+	Mesh* side1 = new Mesh("data/plane.obj", red);
 	side1->setScale(150.0f);
 	side1->setRotation(180.0f, 0.0f, 90.0f);
 	side1->setTranslation(-60, 60, 0.0f);
@@ -48,7 +48,7 @@ void buildCornellScene(Scene* scene)
 	roof->setScale(150.0f);
 	roof->setRotation(180.0f, 0.0f, 0.0f);
 	roof->setTranslation(0.0f, 120, 0.0f);
-	scene->add(roof);*/
+	scene->add(roof);
 	
 	
 	Sphere* ball1 = new Sphere(16.5f, reflect);
@@ -62,8 +62,8 @@ void buildCornellScene(Scene* scene)
 	//EmissiveMaterial* emissive = new EmissiveMaterial(Color(4000.0f, 4000.0f, 4000.0f));
 	//Sphere* light = new Sphere(1.0f, emissive);
 	//light->setTranslation(0.0f, 108.0f, 0.0f);
-	//PointLight* light = new PointLight(Point3D(0.0f, 108.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), 6000.0f);
-	//scene->add(light);
+	PointLight* light = new PointLight(Point3D(0.0f, 108.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), 6000.0f);
+	scene->add(light);
 	
 }
 

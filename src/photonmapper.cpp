@@ -13,10 +13,11 @@
 #include "ray.h"
 #include "intersection.h"
 #include "material.h"
-#include "PhotonMapper.h"
+#include "photonmapper.h"
 #include "timer.h"
 #include "image.h"
 #include "lightprobe.h"
+#include "bvhhitpointaccelerator.h"
 #include <omp.h>
 
 const float nbrSamples = 4.0;
@@ -26,15 +27,17 @@ const bool sampling = true;
 const int maxDepth = 4;
 const float p_abs = 0.1f;
 const float abs_factor = 1.0f / (1.0f - p_abs);
-LightProbe lp;
 const float startRadius = 0.5f;
+const int numberPhotons = 100000;
 
 /**
  * Creates a Path raytracer. The parameters are passed on to the base class constructor.
  */
+
+using namespace std;
+
 PhotonMapper::PhotonMapper(Scene* scene, Image* img) : Raytracer(scene,img)
 {
-	lp.load("data/grace_probe.pfm");
 }
 
 
@@ -53,9 +56,16 @@ void PhotonMapper::computeImage()
 	Timer timer;
 	
 	Color c;
-	int width = mImage->getWidth();
-	int height = mImage->getHeight();
 	
+	cout << "Starting forward pass" << endl;
+	forwardPass();
+	cout << "Forward pass done" << endl;
+	for (int i = 0; i < 10; ++i){
+		photonTracingPass();
+		output(i);
+	}
+	
+
 	// Loop over all pixels in the image
 	/*for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
@@ -72,27 +82,38 @@ void PhotonMapper::computeImage()
 		}
 	}*/
 
-	int lines = 0;
-	#pragma omp parallel for 
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				Color c = firstPass(x, y);
-				mImage->setPixel(x, y, c);
-			}
-	#pragma omp critical 
-			{
-				lines++;
-
-				if (lines % (height / 20) == 0 || lines == height)
-					std::cout << (100 * lines / height) << "%" << std::endl; 
-			}
-		}
-
 	//std::cout << "Total number of rays: " << nbrRays << std::endl;
 	std::cout << "Done in: " << timer.stop() << " seconds" << std::endl;
 }
 
-void PhotonMapper::firstPass(int x, int y){
+void PhotonMapper::forwardPass(){
+	int width = mImage->getWidth();
+	int height = mImage->getHeight();
+
+	int lines = 0;
+//	#pragma omp parallel for 
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				forwardPassPixel(x, y);
+				//mImage->setPixel(x, y, c);
+			}
+//	#pragma omp critical 
+//			{
+				lines++;
+
+				if (lines % (height / 20) == 0 || lines == height)
+					std::cout << (100 * lines / height) << "%" << std::endl;
+//			}
+		}
+
+	cout << "Building BVH" << endl;
+	hitpointBVH.build(vec);
+	//hitpointBVH.objs = vec;
+	cout << "Building BVH done" << endl;
+	//bvh.print();
+}
+
+void PhotonMapper::forwardPassPixel(int x, int y){
 	for (int i = 0; i < iSamplesPerAxis; ++i){
 		for (int j = 0; j < iSamplesPerAxis; ++j){
 			float cx = (float)x + j / samplesPerAxis + uniform() / samplesPerAxis;
@@ -101,12 +122,12 @@ void PhotonMapper::firstPass(int x, int y){
 			
 			Intersection is;
 			if (mScene->intersect(ray, is)){
-				Hitpoint hp;
-				hp.pixelX = x;
-				hp.pixelY = y;
-				hp.is = is;
-				hp.radius = startRadius;
-				hp.pixelWeight = 1 / nbrSamples;
+				Hitpoint* hp = new Hitpoint();
+				hp->pixelX = x;
+				hp->pixelY = y;
+				hp->is = is;
+				hp->radius = startRadius;
+				hp->pixelWeight = 1 / nbrSamples;
 				
 				for (int i = 0; i < mScene->getNumberOfLights(); ++i){
 					PointLight* l = mScene->getLight(i);
@@ -117,107 +138,101 @@ void PhotonMapper::firstPass(int x, int y){
 						Color radiance = l->getRadiance();
 						Color brdf = is.mMaterial->evalBRDF(is, lightVec);
 						float angle = max(lightVec * is.mNormal, 0.0f);
-						hp.directIllumination += radiance * brdf * angle / d2;
+						hp->directIllumination += radiance * brdf * angle / d2;
 					}
 				}
+				vec.push_back(hp);
 			}
 		}
 	}
 }
 
-/**
- * Compute the color of the pixel at (x,y) by raytracing. 
- * The default implementation here just traces through the center of
- * the pixel.
- */
-Color PhotonMapper::tracePixel(int x, int y)
-{
-	Color pixelColor = Color(0.0f, 0.0f, 0.0f);
+void PhotonMapper::photonTracingPass(){
+	for (int i = 0; i < mScene->getNumberOfLights(); ++i){
+		PointLight* l = mScene->getLight(i);
+		for (int i = 0; i < numberPhotons; ++i){
+			
+			float x = 2, y = 2, z = 2;
+			while (x*x + y*y + z*z > 1){
+				x = uniform();
+				y = uniform();
+				z = uniform();
+			}
+			
+			Vector3D dir(x, y, z);
 
-	//super sampling, samples / pixel
-	for (int i = 0; i < iSamplesPerAxis; ++i){
-		for (int j = 0; j < iSamplesPerAxis; ++j){
-			float cx = (float)x + j / samplesPerAxis + uniform() / samplesPerAxis;
-			float cy = (float)y + i / samplesPerAxis + uniform() / samplesPerAxis;
-			Ray ray = mCamera->getRay(cx, cy);
-			pixelColor += trace(ray, 0);
+			Ray ray;
+			ray.orig = l->getWorldPosition();
+			ray.dir = dir;
+
+			Color startFlux = l->getRadiance() * 4.0f * M_PI;
+
+			trace(ray, 0, startFlux);
 		}
 	}
-	return pixelColor / nbrSamples;
 }
+
 
 /**
  * Computes the radiance returned by tracing the ray r.
  */
-Color PhotonMapper::trace(const Ray& ray, int depth)
+void PhotonMapper::trace(const Ray& ray, int depth, const Color& flux)
 {
-	Color colorOut = Color(1.0f,1.0f,1.0f);
 	Intersection is;
+	Color lIndirect = Color(0.0f, 0.0f, 0.0f);
+
 	if (mScene->intersect(ray, is)){
-		Color reflectedC, refractedC, lDirect, lIndirect;
-		float type = uniform();
-		
-		float reflectivity = is.mMaterial->getReflectivity(is);
-		float transparency = is.mMaterial->getTransparency(is);
-	
-		if (type <= reflectivity){
-			colorOut = trace(is.getReflectedRay(), depth + 1);
-		}
-		else if (type - reflectivity <= transparency){
-			colorOut = trace(is.getRefractedRay(), depth + 1);
-		}
-		else{
-			
-			for (int i = 0; i < mScene->getNumberOfLights(); ++i){
-				PointLight* l = mScene->getLight(i);
-				if (!mScene->intersect(is.getShadowRay(l))){
-					Vector3D lightVec = l->getWorldPosition() - is.mPosition;
-					float d2 = lightVec.length2();
-					lightVec.normalize();
-					Color radiance = l->getRadiance();
-					Color brdf = is.mMaterial->evalBRDF(is, lightVec);
-					float angle = max(lightVec * is.mNormal, 0.0f);
-					lDirect += radiance * brdf * angle / d2;
-				}
-			}
+		if (depth < maxDepth || uniform() > p_abs){
+			float theta = acos(sqrt(1 - uniform()));
+			float phi = 2 * M_PI * uniform();
+			float x = sin(theta) * cos(phi);
+			float y = sin(theta) * sin(phi);
+			float z = cos(theta);
 
-			if (depth < maxDepth || uniform() > p_abs){
-				float theta = acos(sqrt(1 - uniform()));
-				float phi = 2 * M_PI * uniform();
-				float x = sin(theta) * cos(phi);
-				float y = sin(theta) * sin(phi);
-				float z = cos(theta);
+			Vector3D nvec(1.0f, 0.0f, 0.0f);
+			Vector3D mvec(0.0f, 1.0f, 0.0f);
 
-				Vector3D nvec(1.0f, 0.0f, 0.0f);
-				Vector3D mvec(0.0f, 1.0f, 0.0f);
+			Vector3D W = is.mNormal;
+			W.normalize();
+			Vector3D U = nvec % W;
+			if (U.length() < 0.01f)
+				U = mvec % W;
+			Vector3D V = W % U;
 
-				Vector3D W = is.mNormal;
-				W.normalize();
-				Vector3D U = nvec % W;
-				if (U.length() < 0.01f)
-					U = mvec % W;
-				Vector3D V = W % U;
+			Vector3D dir = x * U + y * V + z * W;
 
-				Vector3D dir = x * U + y * V + z * W;
+			Ray ray2;
+			ray2.orig = is.mPosition;
+			ray2.dir = dir;
 
-				Ray ray2;
-				ray2.orig = is.mPosition;
-				ray2.dir = dir;
-				if (is.mMaterial->isEmissive()){
-					lDirect = is.mMaterial->evalBRDF(is, dir);
-				}
-				else{
-					lIndirect = M_PI * trace(ray2, depth + 1)* is.mMaterial->evalBRDF(is, dir);
-				}
+			Hitpoint hp;
+			Color addFlux;
+			if (hitpointBVH.intersect(is.mPosition, hp)){
+				//float angle = max(is.mNormal * dir, 0.0f);
+
+				hp.photonCount += 1;
+				addFlux = flux * is.mMaterial->evalBRDF(is, dir);// * M_PI * angle;
+
 				if (depth > maxDepth)
-					lIndirect *= abs_factor;
+					addFlux *= abs_factor;
+
+				hp.totalFlux += addFlux;
+
+				//TODO: FIX THIS SHIET
 			}
-			colorOut = lDirect + lIndirect;
-		}			
+
+			trace(ray2, depth + 1, addFlux);
+		}
 	}
-	else{
-		colorOut = lp.getRadiance(ray.dir);
-	}
-return colorOut;	
 }
 
+void PhotonMapper::output(int i){
+	for (Hitpoint* hp : hitpointBVH.objs){
+		Color out = hp->directIllumination; //hp->totalFlux / (numberPhotons * i * M_PI * hp->radius * hp->radius) + 
+		mImage->setPixel(hp->pixelX, hp->pixelY, out);
+	}
+
+	stringstream ss;
+	ss << "output_photon_" << i << ".png";
+	mImage->save(ss.str());
+}

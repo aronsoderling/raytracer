@@ -11,6 +11,18 @@
 
 using namespace std;
 
+void getAABB(Hitpoint* hp, AABB& bb){
+	bb = AABB();
+
+	for (int i = 0; i < 8; i++) {
+		Vector3D p2((float)(2 * (i & 1) - 1) * hp->radius,
+			(float)(2 * ((i & 2) >> 1) - 1) * hp->radius,
+			(float)(2 * ((i & 4) >> 2) - 1) * hp->radius);
+		Point3D p = hp->is.mPosition + p2;
+		bb.include(p);
+	}
+}
+
 class ComparePrimitives {
 public:
 	bool operator() (Hitpoint *a, Hitpoint *b) {
@@ -25,22 +37,10 @@ public:
 	int sort_dim;
 };
 
-void getAABB(Hitpoint* hp, AABB& bb){
-	bb = AABB();
-
-	for (int i = 0; i < 8; i++) {
-		Vector3D p2((float)(2 * (i & 1) - 1) * hp->radius,
-			(float)(2 * ((i & 2) >> 1) - 1) * hp->radius,
-			(float)(2 * ((i & 4) >> 2) - 1) * hp->radius);
-		Point3D p = hp->is.mPosition + p2;
-		bb.include(p);
-	}
-}
-
 bool intersectAABB(const Point3D& point, const AABB& bb){
 	return point.x >= bb.mMin.x && point.x <= bb.mMax.x &&
 		point.y >= bb.mMin.y && point.y <= bb.mMax.y &&
-		point.z >= bb.mMin.z && point.z <= bb.mMax.z
+		point.z >= bb.mMin.z && point.z <= bb.mMax.z;
 }
 
 void BVHHitpointAccelerator::build(const vector<Hitpoint*>& objects)
@@ -135,7 +135,7 @@ void BVHHitpointAccelerator::build_recursive(int left_index, int right_index, BV
 	build_recursive(split_index, right_index, rightNode, depth + 1);
 }
 
-bool BVHHitpointAccelerator::intersect(const Point3D& point)
+bool BVHHitpointAccelerator::intersect(const Point3D& point, Hitpoint& hp)
 {
 	float tmin, tmax;
 	stack<BVHNode*> nodeStack;
@@ -154,6 +154,7 @@ bool BVHHitpointAccelerator::intersect(const Point3D& point)
 					Hitpoint* obj = objs[i];
 					Vector3D dist(point - obj->is.mPosition);
 					if ( dist.length2() <= obj->radius * obj->radius ){
+						hp = *obj;
 						return true;
 					}
 				}
