@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\aabb.cpp" />
     <ClCompile Include="..\src\bvhaccelerator.cpp" />
+    <ClCompile Include="..\src\bvhhitpointaccelerator.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\color.cpp" />
     <ClCompile Include="..\src\cornellscene.cpp" />
@@ -105,6 +106,7 @@
     <ClCompile Include="..\src\pfm\pfm_input_file.cpp" />
     <ClCompile Include="..\src\pfm\pfm_output_file.cpp" />
     <ClCompile Include="..\src\phong.cpp" />
+    <ClCompile Include="..\src\photonmapper.cpp" />
     <ClCompile Include="..\src\pointlight.cpp" />
     <ClCompile Include="..\src\primitive.cpp" />
     <ClCompile Include="..\src\raytracer.cpp" />
@@ -117,6 +119,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\aabb.h" />
     <ClInclude Include="..\src\bvhaccelerator.h" />
+    <ClInclude Include="..\src\bvhhitpointaccelerator.h" />
     <ClInclude Include="..\src\bvhnode.h" />
     <ClInclude Include="..\src\camera.h" />
     <ClInclude Include="..\src\color.h" />
@@ -142,6 +145,7 @@
     <ClInclude Include="..\src\pfm\pfm_input_file.hpp" />
     <ClInclude Include="..\src\pfm\pfm_output_file.hpp" />
     <ClInclude Include="..\src\phong.h" />
+    <ClInclude Include="..\src\photonmapper.h" />
     <ClInclude Include="..\src\pointlight.h" />
     <ClInclude Include="..\src\primitive.h" />
     <ClInclude Include="..\src\ray.h" />

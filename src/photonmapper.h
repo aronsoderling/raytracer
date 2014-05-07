@@ -22,6 +22,17 @@
  * should be evaluated and summed up.
  */
 
+struct Hitpoint {
+	Intersection is;
+	int pixelX, pixelY;
+	float pixelWeight;
+	float radius;
+	Color directIllumination;
+	float photonCount = 0;
+	int newPhotonCount = 0;
+	Color totalFlux = Color(0.0f,0.0f,0.0f);
+};
+
 class PhotonMapper : public Raytracer
 {
 public:
@@ -33,7 +44,7 @@ public:
 protected:
 	Color tracePixel(int x, int y);
 	Color trace(const Ray& ray, int depth);
-	void firstPass();
+	void firstPass(int x, int y);
 	
 	BVHAccelerator hitpointBVH;
 };

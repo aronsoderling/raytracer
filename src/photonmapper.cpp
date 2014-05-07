@@ -19,14 +19,15 @@
 #include "lightprobe.h"
 #include <omp.h>
 
-const float nbrSamples = 100.0;
-const float samplesPerAxis = 10.0;
-const int iSamplesPerAxis = 10;
+const float nbrSamples = 4.0;
+const float samplesPerAxis = 2.0;
+const int iSamplesPerAxis = 2;
 const bool sampling = true;
 const int maxDepth = 4;
 const float p_abs = 0.1f;
 const float abs_factor = 1.0f / (1.0f - p_abs);
 LightProbe lp;
+const float startRadius = 0.5f;
 
 /**
  * Creates a Path raytracer. The parameters are passed on to the base class constructor.
@@ -75,7 +76,7 @@ void PhotonMapper::computeImage()
 	#pragma omp parallel for 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				Color c = tracePixel(x, y);
+				Color c = firstPass(x, y);
 				mImage->setPixel(x, y, c);
 			}
 	#pragma omp critical 
@@ -91,8 +92,37 @@ void PhotonMapper::computeImage()
 	std::cout << "Done in: " << timer.stop() << " seconds" << std::endl;
 }
 
-void PhotonMapper::firstPass(){
-
+void PhotonMapper::firstPass(int x, int y){
+	for (int i = 0; i < iSamplesPerAxis; ++i){
+		for (int j = 0; j < iSamplesPerAxis; ++j){
+			float cx = (float)x + j / samplesPerAxis + uniform() / samplesPerAxis;
+			float cy = (float)y + i / samplesPerAxis + uniform() / samplesPerAxis;
+			Ray ray = mCamera->getRay(cx, cy);
+			
+			Intersection is;
+			if (mScene->intersect(ray, is)){
+				Hitpoint hp;
+				hp.pixelX = x;
+				hp.pixelY = y;
+				hp.is = is;
+				hp.radius = startRadius;
+				hp.pixelWeight = 1 / nbrSamples;
+				
+				for (int i = 0; i < mScene->getNumberOfLights(); ++i){
+					PointLight* l = mScene->getLight(i);
+					if (!mScene->intersect(is.getShadowRay(l))){
+						Vector3D lightVec = l->getWorldPosition() - is.mPosition;
+						float d2 = lightVec.length2();
+						lightVec.normalize();
+						Color radiance = l->getRadiance();
+						Color brdf = is.mMaterial->evalBRDF(is, lightVec);
+						float angle = max(lightVec * is.mNormal, 0.0f);
+						hp.directIllumination += radiance * brdf * angle / d2;
+					}
+				}
+			}
+		}
+	}
 }
 
 /**

@@ -72,6 +72,10 @@
     </ClCompile>
     <ClCompile Include="..\src\cornellscene.cpp" />
     <ClCompile Include="..\src\pathtracer.cpp" />
+    <ClCompile Include="..\src\photonmapper.cpp" />
+    <ClCompile Include="..\src\bvhhitpointaccelerator.cpp">
+      <Filter>intersection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\defines.h" />
@@ -177,6 +181,10 @@
     <ClInclude Include="..\src\pathtracer.h" />
     <ClInclude Include="..\src\emissivematerial.h">
       <Filter>shading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\photonmapper.h" />
+    <ClInclude Include="..\src\bvhhitpointaccelerator.h">
+      <Filter>intersection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
