@@ -18,12 +18,12 @@
 #include "image.h"
 #include <omp.h>
 
-const float nbrSamples = 100.0;
-const float samplesPerAxis = 10.0;
-const int iSamplesPerAxis = 10;
+const float nbrSamples = 1024.0;
+const float samplesPerAxis = 32.0;
+const int iSamplesPerAxis = 32;
 const bool sampling = true;
 const int maxDepth = 4;
-const float p_abs = 0.5f;
+const float p_abs = 0.1f;
 const float abs_factor = 1.0f / (1.0f - p_abs);
 
 /**
@@ -114,7 +114,7 @@ Color PathTracer::tracePixel(int x, int y)
  */
 Color PathTracer::trace(const Ray& ray, int depth)
 {
-	Color colorOut = Color(0,0,0);
+	Color colorOut = Color(0.0f,0.0f,0.0f);
 	Intersection is;
 	if (mScene->intersect(ray, is)){
 		Color reflectedC, refractedC, lDirect, lIndirect;
@@ -130,6 +130,7 @@ Color PathTracer::trace(const Ray& ray, int depth)
 			colorOut = trace(is.getRefractedRay(), depth + 1);
 		}
 		else{
+			
 			for (int i = 0; i < mScene->getNumberOfLights(); ++i){
 				PointLight* l = mScene->getLight(i);
 				if (!mScene->intersect(is.getShadowRay(l))){
