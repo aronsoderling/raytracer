@@ -22,7 +22,7 @@ void buildCornellScene(Scene* scene)
 	Diffuse* reflect = new Diffuse(Color(0.7f, 0.7f, 0.7f), 0.5f, 0.0f, 1.0f);
 	Diffuse* refract = new Diffuse(Color(0.7f, 0.7f, 0.7f), 0.0f, 0.5f, 1.5f);
 
-	Mesh* ground = new Mesh("data/plane.obj", reflect);
+	Mesh* ground = new Mesh("data/plane.obj", white);
 	ground->setScale(150.0f);
 	scene->add(ground);
 	
@@ -49,6 +49,13 @@ void buildCornellScene(Scene* scene)
 	roof->setRotation(180.0f, 0.0f, 0.0f);
 	roof->setTranslation(0.0f, 120, 0.0f);
 	scene->add(roof);
+
+	Diffuse* water = new Diffuse(Color(0.6f, 0.6f, 0.7f),
+		0.2f, 0.7f, 1.33f);
+	Mesh* surface = new Mesh("data/surface.obj", water);
+	surface->setScale(120.0f);
+	surface->setTranslation(0.0f, 50.0f, 0.0f);
+	scene->add(surface);
 	
 	
 	Sphere* ball1 = new Sphere(16.5f, reflect);

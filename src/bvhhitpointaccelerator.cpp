@@ -135,7 +135,7 @@ void BVHHitpointAccelerator::build_recursive(int left_index, int right_index, BV
 	build_recursive(split_index, right_index, rightNode, depth + 1);
 }
 
-bool BVHHitpointAccelerator::intersect(const Point3D& point, Color addFlux)
+void BVHHitpointAccelerator::intersect(const Intersection& is, Color addFlux)
 {
 	float tmin, tmax;
 	stack<BVHNode*> nodeStack;
@@ -146,16 +146,15 @@ bool BVHHitpointAccelerator::intersect(const Point3D& point, Color addFlux)
 		nodeStack.pop();
 		AABB bb = node->getAABB();
 
-		if (intersectAABB(point, bb)){
+		if (intersectAABB(is.mPosition, bb)){
 
 			if (node->isLeaf()){
 				for (int i = node->getIndex(); i < node->getIndex() + node->getNObjs(); ++i){
 					Hitpoint* obj = objs[i];
-					Vector3D dist(point - obj->is.mPosition);
+					Vector3D dist(is.mPosition - obj->is.mPosition);
 					if ( dist.length2() <= obj->radius * obj->radius ){
 						obj->newPhotonCount += 1;
-						obj->totalFlux += addFlux;
-						return true;
+						obj->totalFlux += addFlux * obj->is.mMaterial->evalBRDF(obj->is, -is.mRay.dir);
 					}
 				}
 			}
@@ -163,16 +162,15 @@ bool BVHHitpointAccelerator::intersect(const Point3D& point, Color addFlux)
 				BVHNode* left = nodes[node->getIndex()];
 				BVHNode* right = nodes[node->getIndex() + 1];
 
-				if (intersectAABB(point, right->getAABB())){
+				if (intersectAABB(is.mPosition, right->getAABB())){
 					nodeStack.push(right);
 				}
-				if (intersectAABB(point, left->getAABB())){
+				if (intersectAABB(is.mPosition, left->getAABB())){
 					nodeStack.push(left);
 				}
 			}
 		}
 	}
-	return false;
 }
 
 

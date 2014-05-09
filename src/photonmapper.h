@@ -32,6 +32,7 @@ public:
 protected:
 	void forwardPass();
 	void forwardPassPixel(int x, int y);
+	void forwardPassRay(Ray ray, int x, int y, float weight, int depth);
 	void photonTracingPass();
 	void trace(const Ray& ray, int depth, const Color& flux);
 	void output(int i);

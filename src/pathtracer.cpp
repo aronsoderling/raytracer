@@ -117,7 +117,7 @@ Color PathTracer::tracePixel(int x, int y)
  */
 Color PathTracer::trace(const Ray& ray, int depth)
 {
-	Color colorOut = Color(1.0f,1.0f,1.0f);
+	Color colorOut = Color(0.0f, 0.0f, 0.0f);//Color(1.0f,1.0f,1.0f);
 	Intersection is;
 	if (mScene->intersect(ray, is)){
 		Color reflectedC, refractedC, lDirect, lIndirect;
@@ -182,7 +182,7 @@ Color PathTracer::trace(const Ray& ray, int depth)
 		}			
 	}
 	else{
-		colorOut = lp.getRadiance(ray.dir);
+		//colorOut = lp.getRadiance(ray.dir);
 	}
 return colorOut;	
 }

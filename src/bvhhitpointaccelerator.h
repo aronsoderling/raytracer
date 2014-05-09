@@ -34,7 +34,7 @@ public:
 
 	virtual void build(const std::vector<Hitpoint*>& objects);
 	void build_recursive(int left_index, int right_index, BVHNode* node, int depth);
-	virtual bool intersect(const Point3D& point, Color addFlux);
+	virtual void intersect(const Intersection& is, Color addFlux);
 	void print_rec(BVHNode& node, int depth);
 	void print();
 };

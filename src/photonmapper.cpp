@@ -27,8 +27,10 @@ const bool sampling = true;
 const int maxDepth = 4;
 const float p_abs = 0.1f;
 const float abs_factor = 1.0f / (1.0f - p_abs);
-const float startRadius = 0.9f;
+const float startRadius = 0.5f;
 const int numberPhotons = 100000;
+const float radiusReduction = 0.7f;
+const int maxForwardPassDepth = 4;
 
 /**
  * Creates a Path raytracer. The parameters are passed on to the base class constructor.
@@ -61,7 +63,9 @@ void PhotonMapper::computeImage()
 	forwardPass();
 	cout << "Forward pass done" << endl;
 	for (int i = 0; i < 10; ++i){
+		cout << "Starting photon tracing pass " << i << endl;
 		photonTracingPass();
+		cout << "Photon tracing pass " << i << " done" << endl;
 		output(i);
 	}
 	
@@ -120,29 +124,50 @@ void PhotonMapper::forwardPassPixel(int x, int y){
 			float cy = (float)y + i / samplesPerAxis + uniform() / samplesPerAxis;
 			Ray ray = mCamera->getRay(cx, cy);
 			
-			Intersection is;
-			if (mScene->intersect(ray, is)){
-				Hitpoint* hp = new Hitpoint();
-				hp->pixelX = x;
-				hp->pixelY = y;
-				hp->is = is;
-				hp->radius = startRadius;
-				hp->pixelWeight = 1 / nbrSamples;
-				
-				for (int i = 0; i < mScene->getNumberOfLights(); ++i){
-					PointLight* l = mScene->getLight(i);
-					if (!mScene->intersect(is.getShadowRay(l))){
-						Vector3D lightVec = l->getWorldPosition() - is.mPosition;
-						float d2 = lightVec.length2();
-						lightVec.normalize();
-						Color radiance = l->getRadiance();
-						Color brdf = is.mMaterial->evalBRDF(is, lightVec);
-						float angle = max(lightVec * is.mNormal, 0.0f);
-						hp->directIllumination += radiance * brdf * angle / d2;
-					}
+			forwardPassRay(ray, x, y, 1 / nbrSamples, 0);
+		}
+	}
+}
+
+void PhotonMapper::forwardPassRay(Ray ray, int x, int y, float weight, int depth){
+	Intersection is;
+	if (weight > 0 && depth < maxForwardPassDepth && mScene->intersect(ray, is)){
+		Hitpoint* hp = new Hitpoint();
+		hp->pixelX = x;
+		hp->pixelY = y;
+		hp->is = is;
+		hp->radius = startRadius;
+		hp->pixelWeight = weight;
+
+		Color reflectedC, refractedC, emittedC;
+		Material* m = is.mMaterial;
+		float reflectivity = m->getReflectivity(is);
+		float transparency = m->getTransparency(is);
+		float diffuse = (1.0f - reflectivity - transparency);
+
+		if (reflectivity > 0.0f) {
+			Ray reflectedRay = is.getReflectedRay();
+			forwardPassRay(reflectedRay, x, y, reflectivity * weight, depth+1);
+		}
+		if (transparency > 0.0f) {
+			Ray refractedRay = is.getRefractedRay();
+			forwardPassRay(refractedRay, x, y, transparency * weight, depth+1);
+		}
+
+		if (diffuse){
+			for (int i = 0; i < mScene->getNumberOfLights(); ++i){
+				PointLight* l = mScene->getLight(i);
+				if (!mScene->intersect(is.getShadowRay(l))){
+					Vector3D lightVec = l->getWorldPosition() - is.mPosition;
+					float d2 = lightVec.length2();
+					lightVec.normalize();
+					Color radiance = l->getRadiance();
+					Color brdf = is.mMaterial->evalBRDF(is, lightVec);
+					float angle = max(lightVec * is.mNormal, 0.0f);
+					hp->directIllumination += radiance * brdf * angle / d2;
 				}
-				vec.push_back(hp);
 			}
+			vec.push_back(hp);
 		}
 	}
 }
@@ -179,6 +204,26 @@ void PhotonMapper::trace(const Ray& ray, int depth, const Color& flux)
 	Color lIndirect = Color(0.0f, 0.0f, 0.0f);
 
 	if (mScene->intersect(ray, is)){
+
+		if (depth != 0){
+			Hitpoint hp;
+			hitpointBVH.intersect(is, flux);
+
+			float type = uniform();
+
+			float reflectivity = is.mMaterial->getReflectivity(is);
+			float transparency = is.mMaterial->getTransparency(is);
+
+			if (type <= reflectivity){
+				trace(is.getReflectedRay(), depth + 1, flux);
+				return;
+			}
+			else if (type - reflectivity <= transparency){
+				trace(is.getRefractedRay(), depth + 1, flux);
+				return;
+			}
+		}
+
 		if (depth < maxDepth || uniform() > p_abs){
 			float theta = acos(sqrt(1 - uniform()));
 			float phi = 2 * M_PI * uniform();
@@ -201,14 +246,11 @@ void PhotonMapper::trace(const Ray& ray, int depth, const Color& flux)
 			Ray ray2;
 			ray2.orig = is.mPosition;
 			ray2.dir = dir;
-			Color addFlux = flux;
-			if (depth != 1){
-				Hitpoint hp;
-				addFlux = flux * is.mMaterial->evalBRDF(is, -dir);
-				if (depth > maxDepth)
-					addFlux *= abs_factor;
-				hitpointBVH.intersect(is.mPosition, addFlux);
-			}
+			Color addFlux = M_PI * is.mMaterial->evalBRDF(is, ray.dir) * flux * (is.mNormal * dir);
+			
+			if (depth >= maxDepth)
+				addFlux *= abs_factor;
+
 			trace(ray2, depth + 1, addFlux);
 		}
 	}
@@ -219,10 +261,30 @@ void PhotonMapper::output(int i){
 		Color flux = hp->totalFlux;
 		float rad = hp->radius;
 		Color out = hp->directIllumination + hp->totalFlux / (numberPhotons * (i+1) * M_PI * hp->radius * hp->radius);
-		mImage->setPixel(hp->pixelX, hp->pixelY, out);
+		mImage->setPixel(hp->pixelX, hp->pixelY, out*hp->pixelWeight + mImage->getPixel(hp->pixelX, hp->pixelY));
 	}
 
 	stringstream ss;
 	ss << "output_photon_" << i << ".png";
 	mImage->save(ss.str());
+	
+	for (Hitpoint* hp : hitpointBVH.objs){
+		//reduce radius
+		float A = hp->photonCount + hp->newPhotonCount;
+		float B = hp->photonCount + radiusReduction * hp->newPhotonCount;
+		if (A != 0){
+			hp->radius *= sqrt(B / A);
+			hp->totalFlux *= B / A;
+			hp->photonCount = B;
+			hp->newPhotonCount = 0;
+			mImage->setPixel(hp->pixelX, hp->pixelY, Color(0, 0, 0));
+		}
+	}
+	
+	/*
+	for (int x = 0; x < mImage->getWidth(); ++x){
+		for (int y = 0; y < mImage->getHeight(); ++y){
+			mImage->setPixel(x,y,Color(0,0,0));
+		}
+	}*/
 }
