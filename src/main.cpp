@@ -33,6 +33,62 @@
 
 using namespace std;
 
+
+static void buildDOFScene(Scene& scene){
+	PointLight* light = new PointLight(Point3D(0.0f, 108.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), 1.0f);
+	scene.add(light);
+
+	Diffuse* red;  
+	Diffuse* green;
+	Diffuse* blue;
+	Diffuse* white;
+
+	red = new Diffuse(Color(0.7f, 0.2f, 0.2f));
+	green = new Diffuse(Color(0.2f,0.7f,0.2f));
+	blue = new Diffuse(Color(0.2f, 0.2f, 0.7f));
+	white = new Diffuse(Color(0.7f,0.7f, 0.7f));
+	
+	Sphere* ball1 = new Sphere(16.5f, red);
+	ball1->setTranslation(Vector3D(22.0f, 16.5f, 31.0f));
+	scene.add(ball1);
+
+	Sphere* ball2 = new Sphere(16.5f, green);
+	ball2->setTranslation(Vector3D(-10.0f, 16.5f, -30.0f));
+	scene.add(ball2);
+
+	Sphere* ball3 = new Sphere(16.5f, blue);
+	ball3->setTranslation(Vector3D(-35.0f, 16.5f, 75.0f));
+	scene.add(ball3);
+
+	Mesh* ground = new Mesh("data/plane.obj", white);
+	ground->setScale(150.0f);
+	scene.add(ground);
+	
+	Mesh* side1 = new Mesh("data/plane.obj", red);
+	side1->setScale(150.0f);
+	side1->setRotation(180.0f, 0.0f, 90.0f);
+	side1->setTranslation(-60, 60, 0.0f);
+	scene.add(side1);
+
+	Mesh* side2 = new Mesh("data/plane.obj", blue);
+	side2->setScale(150.0f);
+	side2->setRotation(0.0f, 0.0f, 90.0f);
+	side2->setTranslation(60, 60, 0.0f);
+	scene.add(side2);
+
+	Mesh* side3 = new Mesh("data/plane.obj", white);
+	side3->setScale(150.0f);
+	side3->setRotation(90.0f, 0.0f, 0.0f);
+	side3->setTranslation(0.0f, 60, -60);
+	scene.add(side3);
+
+	Mesh* roof = new Mesh("data/plane.obj", white);
+	roof->setScale(150.0f);
+	roof->setRotation(180.0f, 0.0f, 0.0f);
+	roof->setTranslation(0.0f, 120, 0.0f);
+	scene.add(roof);
+
+}
 /**
  * Builds the "Spheres" scene.
  */
@@ -201,11 +257,14 @@ int main(int argc, char* const argv[])
 		// Build scene.
 		BVHAccelerator accelerator;
 		Scene scene(&accelerator);
-		Image output(256, 256);
+		Image output(512, 512);
 		Camera* camera = new Camera(&output);
 
-		buildCornellScene(&scene);
+		
+		//buildCornellScene(&scene);
+		
 		setupCornellCamera(camera);
+		
 
 		/*
 		buildSimple(scene, false);
@@ -222,14 +281,23 @@ int main(int argc, char* const argv[])
 		Vector3D up(0.0f, 1.0f, 0.0f);
 		camera->setLookAt(pos, target, up, 52.0f);
 		*/
+		
+		
+		//buildSpheres(scene);
 		/*
-		buildSpheres(scene);
 		Point3D pos(27.0f, 17.0f, 21.0f);
 		Point3D target(-1.0f, -3.0f, 0.0f);
 		Vector3D up(0.0f, 1.0f, 0.0f);
 		camera->setLookAt(pos, target, up, 52.0f);
 		*/
 
+		buildDOFScene(scene);
+		/*
+		Point3D pos(27.0f, 17.0f, 21.0f);
+		Point3D target(-1.0f, -3.0f, 0.0f);
+		Vector3D up(0.0f, 1.0f, 0.0f);
+		camera->setLookAt(pos, target, up, 52.0f);
+		*/
 		scene.add(camera);
 
 		// Prepare the scene for rendering.
@@ -239,11 +307,12 @@ int main(int argc, char* const argv[])
 		std::cout << "creating raytracer" << std::endl;
 
 		//PathTracer rt(&scene, &output);
-		PhotonMapper rt(&scene, &output);
+		//PhotonMapper rt(&scene, &output);
+		WhittedTracer rt(&scene, &output);
 		rt.computeImage();
 
 		// Save image.
-		//output.save("output.png");
+		output.save("output.png");//comment this line when running photonmapper
 	}
 	catch (const std::exception& e) {
 		// Print the error and exit.

@@ -51,11 +51,12 @@ void buildCornellScene(Scene* scene)
 	scene->add(roof);
 
 	Diffuse* water = new Diffuse(Color(0.6f, 0.6f, 0.7f),
-		0.2f, 0.7f, 1.33f);
+		0.05f, 0.9f, 1.33f);
 	Mesh* surface = new Mesh("data/surface.obj", water);
 	surface->setScale(120.0f);
 	surface->setTranslation(0.0f, 50.0f, 0.0f);
-	scene->add(surface);
+	scene->add(surface);
+
 	
 	
 	Sphere* ball1 = new Sphere(16.5f, reflect);

@@ -62,7 +62,7 @@ void PhotonMapper::computeImage()
 	cout << "Starting forward pass" << endl;
 	forwardPass();
 	cout << "Forward pass done" << endl;
-	for (int i = 0; i < 10; ++i){
+	for (int i = 0; i < 1000; ++i){
 		cout << "Starting photon tracing pass " << i << endl;
 		photonTracingPass();
 		cout << "Photon tracing pass " << i << " done" << endl;
@@ -137,14 +137,14 @@ void PhotonMapper::forwardPassRay(Ray ray, int x, int y, float weight, int depth
 		hp->pixelY = y;
 		hp->is = is;
 		hp->radius = startRadius;
-		hp->pixelWeight = weight;
+		
 
 		Color reflectedC, refractedC, emittedC;
 		Material* m = is.mMaterial;
 		float reflectivity = m->getReflectivity(is);
 		float transparency = m->getTransparency(is);
-		float diffuse = (1.0f - reflectivity - transparency);
-
+		float diffuse = (1.0f - reflectivity - transparency)*weight;
+		hp->pixelWeight = (1.0f - reflectivity - transparency) * weight;
 		if (reflectivity > 0.0f) {
 			Ray reflectedRay = is.getReflectedRay();
 			forwardPassRay(reflectedRay, x, y, reflectivity * weight, depth+1);

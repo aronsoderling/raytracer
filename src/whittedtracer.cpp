@@ -17,11 +17,11 @@
 #include "timer.h"
 #include "image.h"
 
-const float nbrSamples = 9.0;
-const float samplesPerAxis = 3.0;
-const int iSamplesPerAxis = 3;
-const bool sampling = true;
-const int maxDepth = 3;
+const float nbrSamples = 1.0;
+const float samplesPerAxis = 1.0;
+const int iSamplesPerAxis = 1;
+const bool sampling = false;
+const int maxDepth = 2;
 
 /**
  * Creates a Whitted raytracer. The parameters are passed on to the base class constructor.
