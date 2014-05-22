@@ -49,11 +49,11 @@ static void buildDOFScene(Scene& scene){
 	white = new Diffuse(Color(0.7f,0.7f, 0.7f));
 	
 	Sphere* ball1 = new Sphere(16.5f, red);
-	ball1->setTranslation(Vector3D(22.0f, 16.5f, 31.0f));
+	ball1->setTranslation(Vector3D(22.0f, 16.5f, -10.0f));
 	scene.add(ball1);
 
 	Sphere* ball2 = new Sphere(16.5f, green);
-	ball2->setTranslation(Vector3D(-10.0f, 16.5f, -30.0f));
+	ball2->setTranslation(Vector3D(-10.0f, 16.5f, -120.0f));
 	scene.add(ball2);
 
 	Sphere* ball3 = new Sphere(16.5f, blue);
@@ -64,6 +64,8 @@ static void buildDOFScene(Scene& scene){
 	ground->setScale(150.0f);
 	scene.add(ground);
 	
+	
+	/*
 	Mesh* side1 = new Mesh("data/plane.obj", red);
 	side1->setScale(150.0f);
 	side1->setRotation(180.0f, 0.0f, 90.0f);
@@ -87,7 +89,7 @@ static void buildDOFScene(Scene& scene){
 	roof->setRotation(180.0f, 0.0f, 0.0f);
 	roof->setTranslation(0.0f, 120, 0.0f);
 	scene.add(roof);
-
+	*/
 }
 /**
  * Builds the "Spheres" scene.

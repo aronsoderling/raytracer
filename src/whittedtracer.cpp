@@ -21,8 +21,8 @@ const float nbrSamples = 1.0;
 const float samplesPerAxis = 1.0;
 const int iSamplesPerAxis = 1;
 const bool sampling = false;
-const int maxDepth = 2;
 const bool DOF = false;
+const int maxDepth = 1;
 
 /**
  * Creates a Whitted raytracer. The parameters are passed on to the base class constructor.
