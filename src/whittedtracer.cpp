@@ -20,9 +20,14 @@
 const float nbrSamples = 1.0;
 const float samplesPerAxis = 1.0;
 const int iSamplesPerAxis = 1;
-const bool sampling = false;
+const bool sampling = true;
 const int maxDepth = 2;
-const bool DOF = false;
+const bool DOF = true;
+const float focalDistance = 180.0f;
+Point3D pointInFocalPlane;
+const int DOFSamples = 10;
+const float DOFLensRadius = 10.0f;
+
 
 /**
  * Creates a Whitted raytracer. The parameters are passed on to the base class constructor.
@@ -50,6 +55,8 @@ void WhittedTracer::computeImage()
 	int width = mImage->getWidth();
 	int height = mImage->getHeight();
 	
+	Point3D pointInFocalPlane = mCamera->mOrigin + mCamera->mForward * focalDistance;
+
 	// Loop over all pixels in the image
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
@@ -104,6 +111,32 @@ Color WhittedTracer::tracePixel(int x, int y)
 	return pixelColor;
 }
 
+bool rayFocalPlaneIntersect(Ray ray, Camera* cam, Intersection& isect){
+	float eps = 0.00001f;
+	Point3D P = ray.orig;
+	Vector3D D = ray.dir;
+	
+	Point3D v0 = pointInFocalPlane;
+	Vector3D e1 = cam->mUp;
+	Vector3D e2 = cam->mRight;
+	Vector3D N = e1 % e2;
+	
+	float s = -D * N;
+	if (abs(s) < eps)
+		return false;
+
+	float s_inv = 1 / s;
+
+	Vector3D R = P - v0;
+	float t = R * N * s_inv;
+
+	// Compute information about the hit point
+	isect.mRay = ray;
+	isect.mPosition = ray.orig + t*ray.dir;		// Compute position of intersection
+	isect.mHitTime = t;
+	return true;
+}
+
 /**
 * Compute the color of the pixel at (x,y) by raytracing.
 * The default implementation here just traces through the center of
@@ -119,8 +152,30 @@ Color WhittedTracer::tracePixelDOF(int x, int y)
 			for (int j = 0; j < iSamplesPerAxis; ++j){
 				float cx = (float)x + j / samplesPerAxis + uniform() / samplesPerAxis;
 				float cy = (float)y + i / samplesPerAxis + uniform() / samplesPerAxis;
-				Ray ray = mCamera->getRay(cx, cy);
-				pixelColor += trace(ray, 0);
+
+				Ray initRay = mCamera->getRay(cx, cy);
+				Intersection is;
+				if (!rayFocalPlaneIntersect(initRay, mCamera, is)){
+					std::cout << "ooops!" << std::endl;
+				}
+				
+				for (int i = 0; i < DOFSamples; ++i){
+					float sX = 2;
+					float sY = 2;
+					while (sX*sX + sY*sY > 1){
+						sX = uniform() * 2 - 1;
+						sY = uniform() * 2 - 1;
+					}
+					Point3D startPos = mCamera->mOrigin + 
+						mCamera->mRight * sX * DOFLensRadius + 
+						mCamera->mUp * sY * DOFLensRadius;
+					Ray ray;
+					ray.orig = startPos;
+					ray.dir = Vector3D(is.mPosition - startPos).normalize();
+					pixelColor += trace(ray, 0);
+				}
+
+				pixelColor /= DOFSamples;
 			}
 		}
 		pixelColor /= nbrSamples;
