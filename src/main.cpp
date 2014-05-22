@@ -35,31 +35,95 @@ using namespace std;
 
 
 static void buildDOFScene(Scene& scene){
-	PointLight* light = new PointLight(Point3D(0.0f, 108.0f, 0.0f), Color(1.0f, 1.0f, 1.0f), 1.0f);
+	PointLight* light = new PointLight(Point3D(30.0f, 85.0f, 100.0f), Color(1.0f, 1.0f, 1.0f), 0.75f);
 	scene.add(light);
+	PointLight* light1 = new PointLight(Point3D(-30.0f, 85.0f, 100.0f), Color(1.0f, 1.0f, 1.0f), 0.75f);
+	scene.add(light1);
+	
 
 	Diffuse* red;  
 	Diffuse* green;
 	Diffuse* blue;
+	Diffuse* cyan;
+	Diffuse* yellow;
 	Diffuse* white;
 
-	red = new Diffuse(Color(0.7f, 0.2f, 0.2f));
-	green = new Diffuse(Color(0.2f,0.7f,0.2f));
-	blue = new Diffuse(Color(0.2f, 0.2f, 0.7f));
-	white = new Diffuse(Color(0.7f,0.7f, 0.7f));
+	red = new Diffuse(Color(0.95f, 0.1f, 0.1f));
+	//red->setReflectivity(0.3);
+	//red->setTransparency(0.2);
+	//red->setIndexOfRefraction(1.05f);
+	green = new Diffuse(Color(0.2f,0.95f,0.2));
+	//green->setReflectivity(0.05);
+	//green->setTransparency(0.93);
+	//green->setIndexOfRefraction(1.10f);
+	blue = new Diffuse(Color(0.1f, 0.1f, 0.95f));
+	//blue->setReflectivity(0.7);
+	//blue->setTransparency(0.75);
+	//blue->setIndexOfRefraction(1.33f);
+	cyan = new Diffuse(Color(0.2f, 0.95f, 0.95));
+	yellow = new Diffuse(Color(0.95, 0.95, 0.1));
+	white = new Diffuse(Color(0.95f,0.95f, 0.95f));
 	
+	/*
 	Sphere* ball1 = new Sphere(16.5f, red);
 	ball1->setTranslation(Vector3D(22.0f, 16.5f, -200.0f));
 	scene.add(ball1);
 
 	Sphere* ball2 = new Sphere(16.5f, green);
-	ball2->setTranslation(Vector3D(-10.0f, 16.5f, 0.0f));
+	ball2->setTranslation(Vector3D(0.0f, 16.5f, 0.0f));
 	scene.add(ball2);
 
 	Sphere* ball3 = new Sphere(16.5f, blue);
 	ball3->setTranslation(Vector3D(-35.0f, 16.5f, 100.0f));
 	scene.add(ball3);
 
+	Sphere* ball5 = new Sphere(16.5f, white);
+	ball5->setTranslation(Vector3D(35.0f, 16.5f, 55.0f));
+	scene.add(ball5);
+
+	Sphere* ball6 = new Sphere(16.5f, yellow);
+	ball6->setTranslation(Vector3D(40.0f, 16.5f, -125.0f));
+	scene.add(ball6);
+	
+	Sphere* ball4 = new Sphere(16.5f, cyan);
+	ball4->setTranslation(Vector3D(-35.0f, 16.5f, -75.0f));
+	scene.add(ball4);
+	*/
+	
+	Mesh* spider = new Mesh("data/spider.obj", green);
+	spider->setRotation(0.0f, 40.0f, 0.0f);
+	spider->setTranslation(Vector3D(0.0f, 0.0f, 0.0f));
+	spider->setScale(20.0f);
+	scene.add(spider);
+	Sphere* ball5 = new Sphere(16.5f, white);
+	ball5->setTranslation(Vector3D(35.0f, 16.5f, 55.0f));
+	scene.add(ball5);
+	Sphere* ball3 = new Sphere(16.5f, blue);
+	ball3->setTranslation(Vector3D(-35.0f, 16.5f, 100.0f));
+	scene.add(ball3);
+	Sphere* ball6 = new Sphere(16.5f, yellow);
+	ball6->setTranslation(Vector3D(40.0f, 16.5f, -125.0f));
+	scene.add(ball6);
+	Sphere* ball1 = new Sphere(16.5f, red);
+	ball1->setTranslation(Vector3D(22.0f, 16.5f, -200.0f));
+	scene.add(ball1);
+	/*
+	Mesh* troll = new Mesh("data/troll.obj", green);
+	troll->setRotation(0.0f, 0.0f, 0.0f);
+	troll->setTranslation(Vector3D(0.0f, 0.0f, -60.0f));
+	troll->setScale(5.0f);
+	/*
+	Mesh* troll = new Mesh("data/troll.obj", red);
+	troll->setTranslation(Vector3D(0.0f, 16.5f, 0.0f));
+	scene.add(troll);
+
+	Mesh* ackel = new Mesh("data/ackel.obj", red);
+	ackel->setTranslation(Vector3D(-35.0f, 16.5f, 100.0f));
+	scene.add(ackel);
+	*/
+
+	
+	
 	Mesh* ground = new Mesh("data/plane.obj", white);
 	ground->setScale(150.0f);
 	scene.add(ground);
@@ -76,13 +140,13 @@ static void buildDOFScene(Scene& scene){
 	side2->setRotation(0.0f, 0.0f, 90.0f);
 	side2->setTranslation(60, 60, 0.0f);
 	scene.add(side2);
-
+	
 	Mesh* side3 = new Mesh("data/plane.obj", white);
 	side3->setScale(150.0f);
 	side3->setRotation(90.0f, 0.0f, 0.0f);
-	side3->setTranslation(0.0f, 60, -60);
+	side3->setTranslation(0.0f, 60, -350);
 	scene.add(side3);
-
+	
 	Mesh* roof = new Mesh("data/plane.obj", white);
 	roof->setScale(150.0f);
 	roof->setRotation(180.0f, 0.0f, 0.0f);

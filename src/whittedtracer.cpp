@@ -17,16 +17,16 @@
 #include "timer.h"
 #include "image.h"
 
-const float nbrSamples = 1.0;
-const float samplesPerAxis = 1.0;
-const int iSamplesPerAxis = 1;
+const float nbrSamples = 16.0;
+const float samplesPerAxis = 4.0;
+const int iSamplesPerAxis = 4;
 const bool sampling = true;
-const int maxDepth = 2;
+const int maxDepth = 1;
 const bool DOF = true;
 const float focalDistance = 180.0f;
-Point3D pointInFocalPlane;
-const int DOFSamples = 10;
-const float DOFLensRadius = 10.0f;
+Point3D pointInFocalPlane = Point3D(0.0f,0.0f,0.0f) ;
+const int DOFSamples = 32;
+const float DOFLensRadius = 5.0f;
 
 /**
  * Creates a Whitted raytracer. The parameters are passed on to the base class constructor.
@@ -145,46 +145,39 @@ Color WhittedTracer::tracePixelDOF(int x, int y)
 {
 	Color pixelColor = Color(0.0f, 0.0f, 0.0f);
 
-	//super sampling, samples / pixel
-	if (sampling){
-		for (int i = 0; i < iSamplesPerAxis; ++i){
-			for (int j = 0; j < iSamplesPerAxis; ++j){
-				float cx = (float)x + j / samplesPerAxis + uniform() / samplesPerAxis;
-				float cy = (float)y + i / samplesPerAxis + uniform() / samplesPerAxis;
-
-				Ray initRay = mCamera->getRay(cx, cy);
-				Intersection is;
-				if (!rayFocalPlaneIntersect(initRay, mCamera, is)){
-					std::cout << "ooops!" << std::endl;
-				}
-				
-				for (int i = 0; i < DOFSamples; ++i){
-					float sX = 2;
-					float sY = 2;
-					while (sX*sX + sY*sY > 1){
-						sX = uniform() * 2 - 1;
-						sY = uniform() * 2 - 1;
-					}
-					Point3D startPos = mCamera->mOrigin + 
-						mCamera->mRight * sX * DOFLensRadius + 
-						mCamera->mUp * sY * DOFLensRadius;
-					Ray ray;
-					ray.orig = startPos;
-					ray.dir = Vector3D(is.mPosition - startPos).normalize();
-					pixelColor += trace(ray, 0);
-				}
-
-				pixelColor /= DOFSamples;
-			}
+//super sampling, samples / pixel
+	
+	for (int i = 0; i < iSamplesPerAxis; ++i){
+		for (int j = 0; j < iSamplesPerAxis; ++j){
+			float cx = (float)x + j / samplesPerAxis + uniform() / samplesPerAxis;
+			float cy = (float)y + i / samplesPerAxis + uniform() / samplesPerAxis;
 		}
-		pixelColor /= nbrSamples;
 	}
-	else{
-		float cx = (float)x + 0.5f;
-		float cy = (float)y + 0.5f;
-		Ray ray = mCamera->getRay(cx, cy);
-		pixelColor = trace(ray, 0);
+	pixelColor /= nbrSamples;
+	Ray initRay = mCamera->getRay(x, y);
+	Intersection is;
+	if (!rayFocalPlaneIntersect(initRay, mCamera, is)){
+		std::cout << "ooops!" << std::endl;
 	}
+
+	for (int i = 0; i < DOFSamples; ++i){
+		float sX = 2;
+		float sY = 2;
+		while (sX*sX + sY*sY > 1){
+			sX = uniform() * 2 - 1;
+			sY = uniform() * 2 - 1;
+		}
+		Point3D startPos = mCamera->mOrigin +
+			mCamera->mRight * sX * DOFLensRadius +
+			mCamera->mUp * sY * DOFLensRadius;
+		Ray ray;
+		ray.orig = startPos;
+		ray.dir = Vector3D(is.mPosition - startPos).normalize();
+		pixelColor += trace(ray, 0);
+	}
+
+	pixelColor /= DOFSamples;
+	
 	return pixelColor;
 }
 
@@ -214,6 +207,14 @@ Color WhittedTracer::trace(const Ray& ray, int depth)
 				Color brdf = is.mMaterial->evalBRDF(is, lightVec);
 				float angle = max(lightVec * is.mNormal, 0.0f);
 				emittedC += radiance * brdf * angle;
+			}
+			else{
+				Vector3D lightVec = l->getWorldPosition() - is.mPosition;
+				lightVec.normalize();
+				Color radiance = l->getRadiance();
+				Color brdf = is.mMaterial->evalBRDF(is, lightVec);
+				float angle = max(lightVec * is.mNormal, 0.0f);
+				emittedC += radiance * brdf * angle * 0.05 + Color(0.005f, 0.005f, 0.005f);
 			}
 		}
 		colorOut = emittedC +refractedC * transparency + reflectedC * reflectivity;
