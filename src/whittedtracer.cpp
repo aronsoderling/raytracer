@@ -22,6 +22,7 @@ const float samplesPerAxis = 1.0;
 const int iSamplesPerAxis = 1;
 const bool sampling = false;
 const int maxDepth = 2;
+const bool DOF = false;
 
 /**
  * Creates a Whitted raytracer. The parameters are passed on to the base class constructor.
@@ -54,7 +55,9 @@ void WhittedTracer::computeImage()
 		for (int x = 0; x < width; x++) {
 			// Raytrace the pixel at (x,y).
 			
-			c = tracePixel(x,y);
+
+			c = (DOF) ? tracePixelDOF(x,y) : tracePixel(x,y);
+			
 			// Store the result in the image.
 			mImage->setPixel(x,y,c);
 		}
@@ -77,6 +80,36 @@ void WhittedTracer::computeImage()
  * the pixel.
  */
 Color WhittedTracer::tracePixel(int x, int y)
+{
+	Color pixelColor = Color(0.0f, 0.0f, 0.0f);
+
+	//super sampling, samples / pixel
+	if (sampling){
+		for (int i = 0; i < iSamplesPerAxis; ++i){
+			for (int j = 0; j < iSamplesPerAxis; ++j){
+				float cx = (float)x + j / samplesPerAxis + uniform() / samplesPerAxis;
+				float cy = (float)y + i / samplesPerAxis + uniform() / samplesPerAxis;
+				Ray ray = mCamera->getRay(cx, cy);
+				pixelColor += trace(ray, 0);
+			}
+		}
+		pixelColor /= nbrSamples;
+	}
+	else{
+		float cx = (float)x + 0.5f;
+		float cy = (float)y + 0.5f;
+		Ray ray = mCamera->getRay(cx, cy);
+		pixelColor = trace(ray, 0);
+	}
+	return pixelColor;
+}
+
+/**
+* Compute the color of the pixel at (x,y) by raytracing.
+* The default implementation here just traces through the center of
+* the pixel.
+*/
+Color WhittedTracer::tracePixelDOF(int x, int y)
 {
 	Color pixelColor = Color(0.0f, 0.0f, 0.0f);
 
