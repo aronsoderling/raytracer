@@ -28,7 +28,6 @@ Point3D pointInFocalPlane;
 const int DOFSamples = 10;
 const float DOFLensRadius = 10.0f;
 
-
 /**
  * Creates a Whitted raytracer. The parameters are passed on to the base class constructor.
  */

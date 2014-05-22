@@ -63,6 +63,7 @@ static void buildDOFScene(Scene& scene){
 	Mesh* ground = new Mesh("data/plane.obj", white);
 	ground->setScale(150.0f);
 	scene.add(ground);
+
 	/*
 	Mesh* side1 = new Mesh("data/plane.obj", red);
 	side1->setScale(150.0f);
